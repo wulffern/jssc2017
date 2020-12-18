@@ -28,6 +28,7 @@
 
 all:
 	docker build   -t jssc2016 .
+	docker cp jssc2016:/jssc2016/lib/jssc2016.pdf .
 
 run-sh:
 	docker run --rm -it jssc2016 bash
