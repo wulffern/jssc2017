@@ -1,0 +1,63 @@
+
+\documentclass[crop]{standalone}
+\usepackage{times}
+
+\usepackage{tikz,pgfplots}
+
+\pgfplotsset{
+        table/search path={../graphics},
+    }
+\usepackage{ifthen}
+\usepackage{calc}
+\usetikzlibrary{patterns}
+
+\pagestyle{empty}
+\begin{document}
+\tikzstyle{stuff_fill}=[rectangle,draw,fill=white,minimum size=1.4em,opacity=0.7]
+\definecolor{mOne}{rgb}{0.36,0.36,1}
+
+\newcommand{\xcore}{2.4174cm}
+\newcommand{\ycore}{4.8726cm}
+\newcommand{\xxcore}{4.583cm}
+\newcommand{\yhio}{6.6358cm}
+\newcommand{\xwio}{2.512cm}
+\begin{tikzpicture}[very thin,font=\Large,scale=1,
+    transform shape]
+
+    \begin{scope}[shift={(0cm,0.6cm)},scale=1]
+
+
+      \draw[black] (3cm,0cm ) node[rotate=0,anchor=north]
+      () {{ (a)  }};
+
+      \draw[black] (9cm,0cm ) node[rotate=0,anchor=north]
+      () {{ (b)   }};
+
+          \begin{scope}[shift={(0cm,0cm)},scale=2.5]
+  \pgftext[at=\pgfpoint{0}{0},left,base]
+          {\pgfimage[interpolate=true,height=2.338cm,width=2.496cm]{../graphics/micrograph1.eps}}
+\end{scope}
+
+
+          \begin{scope}[shift={(6cm,0cm)},scale=1.4]
+  \pgftext[at=\pgfpoint{0}{0},left,base]
+          {\pgfimage[interpolate=true,height=4.25cm,width=4.49cm]{../graphics/layout_picture_gray.eps}}
+\end{scope}
+
+%\draw[white,help lines,step=0.5cm,line width=1pt] (0,0) grid (14cm,7cm);
+
+%%%HiResBoundingBox: -12.24 -13.68 229.5 473.58
+%\draw[white,line width=2pt] (4.25cm,4.25cm) -- (\xxcore,1cm);
+\draw[black,line width=1pt,latex-] (9.9cm,3.5cm) -- ++(0cm,-0.4cm)
+node[anchor=north] () {9-bit CORE};
+%\draw[black,line width=1pt] (9.75cm,3.45cm) rectangle ++(0.25cm,0.5cm);
+
+
+\draw[black,line width=1pt,latex-] (8.6cm,1.8cm) -- ++(-0.6cm,0.2cm)
+node[anchor=south] () {9-bit IO};
+
+
+\end{scope}
+\end{tikzpicture}
+
+\end{document}

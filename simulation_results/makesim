@@ -1,0 +1,68 @@
+#!/usr/bin/perl
+######################################################################
+##        Copyright (c) 2016 Carsten Wulff Software, Norway 
+## ###################################################################
+## Created       : wulff at 2016-11-6
+## ###################################################################
+##   This program is free software: you can redistribute it and/or modify
+##   it under the terms of the GNU General Public License as published by
+##   the Free Software Foundation, either version 3 of the License, or
+##   (at your option) any later version.
+## 
+##   This program is distributed in the hope that it will be useful,
+##   but WITHOUT ANY WARRANTY; without even the implied warranty of
+##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##   GNU General Public License for more details.
+## 
+##   You should have received a copy of the GNU General Public License
+##   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+######################################################################
+my $file = shift;
+my $co = shift;
+my $cn = shift;
+my $cm = shift;
+my $xshift = shift;
+
+my $name = $file;
+$name =~ s/\.csv//ig;
+
+open(fi, "<$file");
+
+open(fo_co,"> ${name}_co.tex");
+open(fo_cn,"> ${name}_cn.tex");
+open(fo_cm,"> ${name}_cm.tex");
+
+print fo_cn <<'EOF';
+\addplot [color=active, line width=1.5pt]
+  table[row sep=crcr]{%
+EOF
+
+print fo_co <<'EOF';
+\addplot [color=poly, line width=1.5pt]
+  table[row sep=crcr]{%
+EOF
+
+print fo_cm <<'EOF';
+\addplot [color=mFour,  line width=1.5pt]
+  table[row sep=crcr]{%
+EOF
+
+my $i=0;
+
+while(<fi>){
+
+  if($i){
+	$i = 0;
+  }else{
+	$i = 1;
+	next;
+  }
+  my @line = split(/,/);
+  print fo_co ($line[$co]*1e9 - $xshift)." ".($line[$co+1]).' \\\\'."\n";
+  print fo_cn ($line[$cn]*1e9 - $xshift)." ".($line[$cn+1]).' \\\\'."\n";
+  print fo_cm ($line[$cm]*1e9 - $xshift)." ".($line[$cm+1]).' \\\\'."\n";
+}
+
+print fo_co "};\n";
+print fo_cn "};\n";
+print fo_cm "};\n";

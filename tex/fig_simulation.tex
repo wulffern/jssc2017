@@ -1,0 +1,69 @@
+
+\input{../tex/fig_header_plots}
+
+
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=3.5in,
+height=1.5in,
+at={(0in,0in)},
+scale only axis,
+xmin=0,
+xmax=16,
+xlabel style={font=\color{white!15!black}, align=center},
+xlabel={Time [ns] \\ (b)},
+ymin=0,
+ymax=0.8,
+ylabel style={font=\color{white!15!black}},
+ylabel={Voltage [V]},
+axis background/.style={fill=white},
+xmajorgrids,
+ymajorgrids,
+legend style={at={(0.97,0.03in)}, legend columns=-1, anchor=south east, legend cell align=left, align=left, draw=white!15!black}
+]
+
+\input{../simulation_results/20MHz0V71_cm}
+\addlegendentry{CK\_CMP}
+
+
+\input{../simulation_results/20MHz0V71_co}
+\addlegendentry{CO}
+
+\input{../simulation_results/20MHz0V71_cn}
+\addlegendentry{$D_{N0}$}
+
+\end{axis}
+
+\begin{axis}[%
+width=3.5in,
+height=1.5in,
+at={(0in,2.2in)},
+scale only axis,
+xmin=0,
+xmax=16,
+xlabel style={font=\color{white!15!black}, align=center},
+xlabel={Time [ns] \\ (a) },
+ymin=0,
+ymax=0.8,
+ylabel style={font=\color{white!15!black}},
+ylabel={Voltage [V]},
+axis background/.style={fill=white},
+xmajorgrids,
+ymajorgrids,
+legend style={at={(0.97,1.2in)}, legend columns=-1,anchor=south east, legend cell align=left, align=left, draw=white!15!black}
+]
+
+\input{../simulation_results/2MHz0V49_cm}
+\addlegendentry{CK\_CMP}
+
+\input{../simulation_results/2MHz0V49_co}
+\addlegendentry{CO}
+
+\input{../simulation_results/2MHz0V49_cn}
+\addlegendentry{$D_{N0}$}
+
+\end{axis}
+
+\end{tikzpicture}
+\end{document}

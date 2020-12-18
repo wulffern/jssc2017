@@ -1,0 +1,35 @@
+#!/usr/bin/perl
+use strict;
+
+my $is_sarmx = 0;
+while(<>){
+
+  if(m/newcommand/){
+    $is_sarmx = 0;
+  }
+
+  if(m/\(3\.78,0\).*VSS/ig){
+      s/3.78/10/ig;
+  }
+  
+  
+  if(m/\{\\figSAREMXoneCV/){
+    $is_sarmx = 1;
+  }
+
+  
+  if($is_sarmx){
+    s/\$A\$/\$N\$/ig;
+    s/\$B\$/\$P\$/ig;
+    s/\$RST\\_N\$/\$\\overline\{CK\}\$/ig;
+    s/\$AVDD\$/\$VDD\$/ig;
+    s/\$AVSS\$/\$VSS\$/ig;
+    s/\$EN\$/\$EI\$/ig;
+    s/\$ENO\$/\$EO\$/ig;
+	s/filldraw \[mFour/draw \[mFour/ig;
+  }
+
+  print $_;
+
+
+}

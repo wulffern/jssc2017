@@ -1,0 +1,1666 @@
+{
+    "header" : {
+        "comment" : "------------------------------------------------------------",
+        "author" : "$Author: wulff $",
+
+
+        "date" : "$Date: 2014-07-19 22:37:47 +0200 (Sat, 19 Jul 2014) $",
+        "revision" : "$Revision: 33 $",
+        "headurl" : "$HeadURL: https://cnanokit.svn.cloudforge.com/cnano/trunk/examples/cpdk.json $",
+        "comment" : "------------------------------------------------------------"
+    },
+    "noPortTranslation" : 1,
+    "disableCells" : "Reduce the cells in the GDS by skipping some of the cells defined below",
+    "disableCells" : [
+
+    ],
+    "cells":
+    [
+        {
+            "comment" : "------------------------------------------------------------" ,
+            "comment" : "                Unit cells                                  " ,
+            "comment" : "------------------------------------------------------------"
+        },
+
+        { "name" : "DMOSE" ,
+          "class" : "Gds::GdsPatternTransistor",
+          "afterNew" : {
+              "minPolyLength" : 36
+          },
+          "yoffset": -1.5,
+          "heightoffset": -2,
+          "widthoffset" : -1,
+          "fillCoordinatesFromStrings" : [
+              [   "OD",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-----xxxx----------xxxx",
+                  "-----xCxC----------xCxC",
+                  "-----xxxx----------xxxx",
+                  "-----xxxx----------xxxx",
+                  "-----xxxx----------xxxx",
+                  "-----xCxC----------xCxC",
+                  "-----xxxx----------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx"
+              ],
+              [   "PO",
+                  "-----------------------",
+                  "--mmmmmmmmmmmmm--------",
+                  "-----------------------",
+                  "-----------------------",
+                  "-----------------------",
+                  "-----------------------",
+                  "-----------------------",
+                  "--mmmmmmmmmmcmc--------",
+                  "-----------------------",
+                  "-----------------------",
+                  "-----------------------",
+                  "-----------------------",
+                  "-----------------------",
+                  "--mmmmmmmmmmmmm--------",
+                  "-----------------------"
+              ],
+              [   "M1",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-----wDww----------xxxx",
+                  "-------------------xxxx",
+                  "------------wGww---xBxx",
+                  "-------------------xxxx",
+                  "-----wSww----------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx",
+                  "-------------------xxxx"
+              ]
+          ]
+        },
+
+        { "name" : "PCHDEL",
+          "inherit" : "DMOSE",
+          "type" : "pch_lvt_io",
+          "beforePlace" :{
+              "addEnclosures" : [
+                  ["OD",1,["PPE","LVT","HS"]],
+                  ["OD",0,["PP","NSS"]]
+              ],
+              "addEnclosuresByRectangle" : [
+                  ["OD",[0,0,"width","height"],["OD2"]],
+                  ["OD",[0,0,11,"height"],["HS"]]
+              ]
+          }
+        },
+
+
+
+        { "name" : "NCHDEL",
+          "inherit" : "DMOSE",
+          "xoffset" : -2,
+          "afterNew" : {
+              "mirrorPatternString" : 1
+          },
+          "type" : "nch_lvt_io",
+          "beforePlace" :{
+              "addEnclosures" : [
+                  ["OD",1,["LVT"]]
+              ],
+              "addEnclosuresByRectangle" : [
+                  ["OD",[0,0,"width","height"],["NW","HS","OD2"]],
+                  ["OD",[0,0,4,"height"],["NSSN"]]
+              ]
+          }
+        },
+
+        { "name" : "DMOS" ,
+          "class" : "Gds::GdsPatternTransistor",
+          "yoffset": -0.5,
+          "type": "pch",
+          "widthoffset" : -1,
+          "fillCoordinatesFromStrings" : [
+              [   "OD",
+                  "-------------------xxxx",
+                  "-----xCxC----------xCxC",
+                  "-----xxxx----------xxxx",
+                  "-----xCxC----------xCxC",
+                  "-------------------xxxx"
+              ],
+              [   "PO",
+                  "--mmmmmmmmmmmmm--------",
+                  "-----------------------",
+                  "--mmmmmmmmmmcxc--------",
+                  "-----------------------",
+                  "--mmmmmmmmmmmmm--------"
+              ],
+              [   "M1",
+                  "-------------------xxxx",
+                  "-----wDww----------xxxx",
+                  "------------wGww---xBxx",
+                  "-----wSww----------xxxx",
+                  "-------------------xxxx"
+              ]
+          ]
+        },
+
+        { "name" : "PCHDL",
+          "inherit" : "DMOS",
+          "type" : "pch_lvt",
+          "beforePlace" :{
+              "addEnclosures" : [
+                  ["OD",1,["PP","LVT","HSSOI"]],
+                  ["OD",0,["PP","NOSOI"]]
+              ]
+          }
+        },
+        { "name" : "NCHDL",
+          "inherit" : "DMOS",
+          "xoffset" : -2,
+          "afterNew" : {
+              "mirrorPatternString" : 1
+          },
+          "type" : "nch_lvt",
+          "beforePlace" :{
+              "addEnclosures" : [
+                  ["OD",1,["LVT"]]
+              ],
+              "addEnclosuresByRectangle" : [
+                  ["OD",[0,0,21,5],["NW","HSSOI"]],
+                  ["OD",[0,0,4,5],["NOSOIN"]]
+              ]
+          }
+        },
+        { "name" : "NCHDLR", "type" : "nch_lvt",
+          "inherit" : "NCHDL", "afterPaint" : { "mirrorCenterX" : 0 },
+          "beforePlace" :{
+              "addEnclosuresByRectangle" : [
+                  ["OD",[0,0,22,5],["NW","HSSOI"]]
+              ]
+          }
+        },
+        {
+            "comment" : "------------------------------------------------------------" ,
+            "comment" : "                Digital Cells                               " ,
+            "comment" : "------------------------------------------------------------"
+        },
+        { "name": "TIEH_CV",
+          "symbol" : "tieh",
+          "class" : "Layout::LayoutDigitalCell",
+          "spice" : [ ".subckt TIEH_CV Y AVDD AVSS",
+                      "MN0 A A AVSS AVSS NCHDL",
+                      "MP0 Y A AVDD AVSS PCHDL",
+                      ".ends TIEH_CV"],
+          "addSchematicCoordinates" : {
+              "MN0" : [ 0.25, 0, "R0"],
+              "MP0" : [0.25, 0.5, "R0"]
+          },
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","A","MN0:G-|--MN0:D"],
+                                      ["PO","A","MN0:G-MP0:G"] ]
+          },
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["Y","M1", "MP0:D"] ]
+          }
+        },
+        { "name": "TIEL_CV",
+          "symbol" : "tiel",
+          "class" : "Layout::LayoutDigitalCell",
+          "spice" : [ ".subckt TIEL_CV Y AVDD AVSS",
+                      "MN0 Y A AVSS AVSS NCHDL",
+                      "MP0 A A AVDD AVSS PCHDL",
+                      ".ends TIEL_CV"],
+          "addSchematicCoordinates" : {
+              "MN0" : [ 0.25, 0, "R0"],
+              "MP0" : [0.25, 0.5, "R0"]
+          },
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","A","MP:D-|--MP:G"],
+                                      ["PO","A","MN:G-MP:G"] ]
+          }
+          ,
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["Y","M1", "MN0:D"] ]
+          }
+        },
+        { "name" : "RES5",
+          "class" : "Gds::GdsPatternHighResistor",
+          "yoffset": -0.5,
+          "xoffset": -0.5,
+          "polyWidthAdjust" : 0,
+          "afterNew" :{
+              "horizontalGridMultiplier" : 2.2,
+              "verticalGridMultiplier" : 2.2
+          },
+          "fillCoordinatesFromStrings" : [
+              [   "PO",
+                  "X-X-X-X",
+                  "X-X-X-X",
+                  "Q-Q-Q-Q",
+                  "X-X-X-X",
+                  "X-X-X-X",
+                  "X-X-X-X",
+                  "X-X-X-X",
+                  "X-X-X-X",
+                  "X-X-X-X",
+                  "X-X-X-X",
+                  "Q-Q-Q-Q",
+                  "X-X-X-X"
+              ],
+              [ "M1",
+                "NXX-XXP",
+                "--X-X--",
+                "X-X-X-X",
+                "X-----X",
+                "X-----X",
+                "X-----X",
+                "X-----X",
+                "X-----X",
+                "X-----X",
+                "X-----X",
+                "X-XXX-X",
+                "-------"
+              ]
+
+          ],
+          "beforePlace" :{
+              "addEnclosuresByRectangle" : [
+                  ["PO",[0,3,"width",5],["OP"]],
+                  ["PO",["self"],["PRES","RE"]]
+              ]
+          }
+        },
+
+        { "name" : "RES5S2",
+          "inherit" : "RES5",
+          "afterNew" : {
+              "copyColumns" :[
+                  { "count" : 1, "offset" : 1,"length" : 4}
+              ]
+          }
+        },
+        { "name" : "RPPO_S1",
+          "class" : "Layout::LayoutDigitalCell",
+          "symbol" : "res",
+          "spice": [".subckt RPPO_S1 P N B",
+                    "XA1 N P B RES5S2",
+                    ".ends"
+                   ],
+          "beforeRoute" : {
+              "addGuard" : [ "B", 6 , ["NOSOI", "PP"] ]
+          },
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["P","M1"] , ["N", "M1"]]
+          }
+
+        },
+        { "name" : "RPPO_S0",
+          "inherit" : "RPPO_S1",
+          "spice": [".subckt RPPO_S0 P N B",
+                    "XA1 P N B RES5",
+                    ".ends"
+                   ]
+        },
+        { "name" : "RPPO_S2",
+          "inherit" : "RPPO_S1",
+          "spice": [".subckt RPPO_S2 P N B",
+                    "XA1 N1 P B RES5S2",
+                    "XA2 N N1 B RES5S2",
+                    ".ends"
+                   ]
+        },
+        { "name" : "RPPO_S4",
+          "inherit" : "RPPO_S1",
+          "spice": [".subckt RPPO_S4 P N B",
+                    "XA1 N1 P B RES5S2",
+                    "XA2 N2 N1 B RES5S2",
+                    "XA3 N3 N2 B RES5S2",
+                    "XA4 N N3 B RES5S2",
+                    ".ends"
+                   ]
+        },
+
+        { "name" : "CAPMOM",
+          "boundaryIgnoreRouting" : 0,
+          "class" : "Gds::GdsPatternCapacitor",
+          "yoffset": -0.5,
+          "xoffset": -0.5,
+          "widthoffset" : -1,
+          "fillCoordinatesFromStrings" : [
+              [   "M1",
+                  "--x-xxkxxxxxxxxxkxxxx--",
+                  "--x-----------------x--",
+                  "--xxxxkxxxxxxxxxxxx-x--",
+                  "--x-----------------x--",
+                  "--x-xxxxxxxxxxxxkxxxx--",
+                  "--x-----------------x--",
+                  "--xxxxkxxxxxxxxxxxx-x--",
+                  "--x-----------------x--",
+                  "--x-xxkxxxxxxxxxkxxxx--"
+
+              ],
+              [   "M2",
+                  "--x-xxkxxxxxxxxxkxxxx--",
+                  "--x-----------------x--",
+                  "--xxxxkxxxxxxxxxxxx-x--",
+                  "--x-----------------x--",
+                  "--x-xxxxxxxxxxxxkxxxx--",
+                  "--x-----------------x--",
+                  "--xxxxkxxxxxxxxxxxx-x--",
+                  "--x-----------------x--",
+                  "--x-xxkxxxxxxxxxkxxxx--"
+
+              ],
+              [   "M3",
+                  "--x-xxkxxxxxxxxxkxxxx--",
+                  "--x-----------------x--",
+                  "--xxxxkxxxxxxxxxxxx-x--",
+                  "--x-----------------x--",
+                  "--x-xxxxxxxxxxxxkxxxx--",
+                  "--x-----------------x--",
+                  "--xxxxkxxxxxxxxxxxx-x--",
+                  "--x-----------------x--",
+                  "--x-xxkxxxxxxxxxkxxxx--"
+
+              ],
+              [   "M4",
+                  "--x-xxxxxxxxxxxxxxxxx--",
+                  "--x-----------------x--",
+                  "--xxxxxxxxxxxxxxxxx-x--",
+                  "--A-----------------B--",
+                  "--x-xrxxxxxxxxxxxxxxx--",
+                  "--x-----------------x--",
+                  "--xxxxxxxxxxxxxxrxx-x--",
+                  "--x-----------------x--",
+                  "--x-xxxxxxxxxxxxxxxxx--"
+
+              ]
+
+          ],
+          "afterNew" : {
+              "getRuleForHorizontalGrid" : ["PO","space"],
+              "getRuleForVerticalGrid" : ["PO","space"],
+              "copyColumns" :[
+                  { "count" : 10, "offset" : 7,"length" : 2}
+              ]
+          }
+
+        },
+
+        { "name": "TGX2_CV" ,
+          "class" : "Layout::LayoutDigitalCell",
+          "rows": 5,
+          "setYoffsetHalf" : "",
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","CN","MN0:S-|--MP0:S"],
+                                      ["PO","C","MN0:G-MP0:G"],
+                                      ["M1","B","MN1:D-MP1:D"],
+                                      ["M1","A","MN1:S-MP1:S"],
+                                      ["M1","C","MN0:G|-MN1:G,MN2:G"],
+                                      ["M2","DMY2","MN1$:D|-MN1b:D"],
+                                      ["M2","DMY3","MP1$:S|-MP1b:S"],
+                                      ["M1","DMY4","MP0$:S-|--MP1$:G"],
+                                      ["M1","CN","MP1$:G||MP1b$:G"],
+                                      ["M1","DMY","MN5:G-|--MN5:S"],
+                                      ["M3","DMY1","MP5:S-|--MP5:G","nostartcut"]
+                                    ],
+              "addConnectivityRoutes" : [
+
+              ]
+          },
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["C","M1", "MP0:G"],["B","M1","MN1b:D"],["A","M1","MP1b:S"]
+                                 ]
+          }
+        },
+
+        { "name" : "CAP",
+          "class" : "Gds::GdsPatternCapacitor",
+          "yoffset": -0.5,
+          "xoffset": -0.5,
+          "widthoffset" : -1,
+          "fillCoordinatesFromStrings" : [
+
+              [   "M1",
+                  "-wwwwwwwwkwwwwww------",
+                  "----------------------",
+                  "-wwwwwwwwkwwwwww------",
+                  "----------------------",
+                  "----------------------"
+
+              ],
+              [   "M2",
+                  "-xxxxxxxxxkxxxxxxxxx--",
+                  "----------------------",
+                  "-xxxxxxxxxkxxxxxxxxx--",
+                  "----------------------",
+                  "----------------------"
+              ],
+              [   "M3",
+                  "--xxxxxxxxxxxxxx-xxkx-",
+                  "----x---------------B-",
+                  "kxxrx-xxxxxxxxxxxxxrx-",
+                  "----------------------",
+                  "----------------------"
+              ],
+              [   "M4",
+                  "wwwwwwwwwwwwwwwwwwwww-",
+                  "----------------------",
+                  "wAwwwwwwwwwwwwwwwwwww-",
+                  "----------------------",
+                  "----------------------"
+
+              ]
+
+          ]
+        },
+        {"name" : "CAPR" , "inherit" : "CAP", "afterPaint" : { "mirrorCenterY" : 0 }},
+
+
+        { "name": "CAPX1_CV" ,
+          "class" : "Layout::LayoutDigitalCell",
+          "spice" :[
+              ".subckt CAPX1_CV A B " ,
+              "XA1 A B CAPR",
+              "XB1 A B CAP",
+              ".ends "
+          ],
+
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["A","M4", "XA1:A"] , ["B", "M3", "XB1:B"]]
+
+          }
+        },
+        { "name" : "DCAP_CV",
+
+          "class" : "Layout::LayoutDigitalCell",
+          "symbol" : "cap",
+          "composite" : 1,
+          "spice" :[
+              ".subckt DCAP_CV A B " ,
+              "XCAPC A B CAPX1_CV M=40",
+              ".ends "
+          ],
+          "beforeRoute" : {
+              "addDirectedRoutes" :[
+                  ["M4", "GNG","XCAPC0:A-|XCAPC:A","30space"],
+                  ["M3", "VS","XCAPC0:B--|XCAPC:B"]
+
+              ]
+          },
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["A","M1", "XCAPC0:A"] , ["B", "M1", "XCAPC0:B"]]
+          }
+        },
+        { "name" : "CAPX20_CV",
+          "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "symbol" : "cap",
+          "composite" : 1,
+          "spice" :[
+              ".subckt CAPX20_CV A B " ,
+              "XCAPC A B CAPMOM M=30",
+              ".ends "
+          ],
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["A","M4" ] , ["B", "M4"]]
+          }
+        },
+        { "name" : "CAPX10_CV", "inherit" : "CAPX20_CV",
+          "boundaryIgnoreRouting" : 0,
+          "spice" :[
+              ".subckt CAPX10_CV A B " ,
+              "XCAPC A B CAPMOM M=10",
+              ".ends "
+          ]
+        },
+        { "name": "IVX1_CV" ,
+          "symbol" : "inv",
+          "class" : "Layout::LayoutDigitalCell",
+          "spice" : [
+              ".subckt IVX1_CV A Y AVDD AVSS" ,
+              "MN0 Y A AVSS AVSS NCHDL",
+              "MP0 Y A AVDD AVSS PCHDL",
+              ".ends IVX1_CV"
+          ],
+          "addSchematicCoordinates" : {
+              "MN0" : [ 0.25, 0, "R0"],
+              "MP0" : [0.25, 0.5, "R0"]
+          },
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","Y","MN:D-|--MP:D"],
+                                      ["PO","A","MN:G-MP:G"] ]
+          },
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["A","M1", "MN0:G"] , ["Y", "M1", "MN0:D"]]
+          }
+        },
+        { "name": "IVX2_CV" ,
+          "class" : "Layout::LayoutDigitalCell",
+          "symbol" : "inv",
+          "setYoffsetHalf" :  "" ,
+          "rows" : 2,
+          "spice" : [ ".subckt IVX2_CV A Y AVDD AVSS",
+                      "MN0 Y A AVSS AVSS NCHDL",
+                      "MN1 AVSS A Y AVSS NCHDL",
+                      "MP0 Y A AVDD AVSS PCHDL",
+                      "MP1 AVDD A Y AVSS PCHDL",
+                      ".ends IVX2_CV"],
+          "addSchematicCoordinates" : {
+              "MN0" : [ 0.25, 0, "R0"],
+              "MP0" : [0.25, 0.5, "R0"],
+              "MN1" : [ 1, 0, "MX"],
+              "MP1" : [1, 0.5, "MX"]
+          },
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","Y","MN0:D-|--MP0:D"],
+                                      ["PO","A","MN:G-MP:G"] ,
+                                      ["M1","A","MN0:G||MN1:G"] ,
+                                      ["M1","A","MP0:G||MP1:G"]
+                                    ]
+          },
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["A","M1", "MN0:G"] , ["Y", "M1", "MN0:D"]]
+          }
+        },
+        { "name": "SWX2_CV" ,
+          "class" : "Layout::LayoutDigitalCell",
+          "symbol" : "",
+          "inherit" : "IVX2_CV",
+          "spice" : [ ".subckt SWX2_CV A Y VREF AVDD AVSS",
+                      "MN0 Y A AVSS AVSS NCHDL",
+                      "MN1 AVSS A Y AVSS NCHDL",
+                      "MP0 Y A VREF AVSS PCHDL",
+                      "MP1 VREF A Y AVSS PCHDL",
+                      ".ends SWX2_CV"],
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["VREF","M1", "MP0:S"]]
+          }
+        },
+        { "name": "TGPD_CV" ,
+          "class" : "Layout::LayoutDigitalCell",
+          "setYoffsetHalf" : "",
+          "rows": 3,
+          "spice" : [ ".subckt TGPD_CV C A B AVDD AVSS",
+                      "MN0 AVSS C CN AVSS NCHDL",
+                      "MN1 B C AVSS AVSS NCHDL",
+                      "MN2 A CN B AVSS NCHDL",
+                      "MP0 AVDD C CN AVSS PCHDL",
+                      "MP1_DMY B AVDD AVDD AVSS PCHDL",
+                      "MP2 A C B AVSS PCHDL",
+                      ".ends"],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","C","MN0:S-|--MP0:S"],
+                                      ["PO","C","MN0:G-MP0:G"],
+                                      ["M1","A","MN2:D-|--MP2:D"],
+                                      ["M1","B","MN2:S-|--MP2:S"],
+                                      ["M1","C","MN0:G||MN1:G"],
+                                      ["M1","CN","MN2:G>-|--MN0:S"],
+                                      ["M1","C","MP0:G-|MP2:G"],
+                                      ["M4","NC","MP1:S--|--MP1:G"]
+                                    ]
+          },
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["C","M1", "MP0:G"],["B","M1","MP2:S"],["A","M1","MN2:D"]
+                                 ]
+          }
+        },
+        { "name": "IVX4_CV" ,
+          "class" : "Layout::LayoutDigitalCell",
+          "symbol" : "inv",
+          "setYoffsetHalf" :  "" ,
+          "rows" : 4,
+          "spice" : [ ".subckt IVX4_CV A Y AVDD AVSS",
+                      "MN0 Y A AVSS AVSS NCHDL",
+                      "MN1 AVSS A Y AVSS NCHDL",
+                      "MN2 Y A AVSS AVSS NCHDL",
+                      "MN3 AVSS A Y AVSS NCHDL",
+                      "MP0 Y A AVDD AVSS PCHDL",
+                      "MP1 AVDD A Y AVSS PCHDL",
+                      "MP2 Y A AVDD AVSS PCHDL",
+                      "MP3 AVDD A Y AVSS PCHDL",
+                      ".ends IVX4_CV"],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","Y","MN0:D,MN2:D-|--MP0:D,MP2:D"],
+                                      ["PO","A","MN:G-MP:G"] ,
+                                      ["M1","A","MN0:G||MN3:G"] ,
+                                      ["M1","A","MP0:G||MP3:G"]
+                                    ]
+          },
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["A","M1", "MN0:G"] , ["Y", "M1", "MN0:D"]]
+          }
+        },
+        { "name": "IVX8_CV" ,
+          "class" : "Layout::LayoutDigitalCell",
+          "symbol" : "inv",
+          "setYoffsetHalf" :  "" ,
+          "rows" : 8,
+          "spice" : [ ".subckt IVX8_CV A Y AVDD AVSS",
+                      "MN0 Y A AVSS AVSS NCHDL",
+                      "MN1 AVSS A Y AVSS NCHDL",
+                      "MN2 Y A AVSS AVSS NCHDL",
+                      "MN3 AVSS A Y AVSS NCHDL",
+                      "MN4 Y A AVSS AVSS NCHDL",
+                      "MN5 AVSS A Y AVSS NCHDL",
+                      "MN6 Y A AVSS AVSS NCHDL",
+                      "MN7 AVSS A Y AVSS NCHDL",
+                      "MP0 Y A AVDD AVSS PCHDL",
+                      "MP1 AVDD A Y AVSS PCHDL",
+                      "MP2 Y A AVDD AVSS PCHDL",
+                      "MP3 AVDD A Y AVSS PCHDL",
+                      "MP4 Y A AVDD AVSS PCHDL",
+                      "MP5 AVDD A Y AVSS PCHDL",
+                      "MP6 Y A AVDD AVSS PCHDL",
+                      "MP7 AVDD A Y AVSS PCHDL",
+                      ".ends IVX8_CV"],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","Y","MN[0246]:D-|--MP[0246]:D"],
+                                      ["PO","A","MN:G-MP:G"] ,
+                                      ["M1","A","MN0:G||MN7:G"] ,
+                                      ["M1","A","MP0:G||MP7:G"]
+                                    ]
+          },
+          "afterRoute"  : {
+              "addPortOnRects" : [  ["A","M1", "MN0:G"] , ["Y", "M1", "MN0:D"]]
+          }
+        },
+
+        { "name": "IVTRIX1_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "rows" : 2,
+          "setYoffsetHalf" :  "" ,
+          "description" : "Tristate inverter, Y = A if C, Y =HiZ if CN",
+          "spice" : [ ".subckt IVTRIX1_CV A C CN Y AVDD AVSS",
+                      "MN0 N1 A AVSS AVSS NCHDL",
+                      "MN1 Y C N1 AVSS NCHDL",
+                      "MP0 N2 A AVDD AVSS PCHDL",
+                      "MP1 Y CN N2 AVSS PCHDL",
+                      ".ends IVTRIX1_CV"],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","Y","MN1:D-|--MP1:D"],
+                                      ["PO","A","MN0:G-MP0:G"]
+                                    ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["A", "M1","MN0:G"], ["CN", "M1"], ["C", "M1"] ,["Y","M1","MN1:D"]]
+          }
+        },
+        { "name" : "IVTRICX1_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "composite" :1,
+          "spice" : [".subckt IVTRICX1_CV A C Y AVDD AVSS",
+                     "XA1 C CN AVDD AVSS IVX1_CV",
+                     "XA2 A C CN Y AVDD AVSS IVTRIX1_CV",
+                     ".ends"
+                    ],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","CN","XA1:MP0:D-|--XA2:CN"]
+                                    ],
+              "addConnectivityRoutes" : [
+                  ["M1","^C$","-|--","onTopL"]
+              ]
+          }
+
+        },
+        { "name": "NDTRIX1_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "rows" : 3,
+          "setYoffsetHalf" :  "" ,
+          "description" : "Tristate nand, Y = !A if C and !RN, Y =HiZ if CN",
+          "spice" : [ ".subckt NDTRIX1_CV A C CN RN Y AVDD AVSS",
+                      "MN2 N1 RN AVSS AVSS NCHDL",
+                      "MN0 N2 A N1 AVSS NCHDL",
+                      "MN1 Y C N2 AVSS NCHDL",
+                      "MP2 AVDD RN N2 AVSS PCHDL",
+                      "MP0 N2 A AVDD AVSS PCHDL",
+                      "MP1 Y CN N2 AVSS PCHDL",
+                      ".ends "],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","Y","MN1:D-|--MP1:D"],
+                                      ["M1","N2","MP2:S|-MP0:D"],
+                                      ["M1","N2","MN0:D-MP0:D"],
+                                      ["PO","A","MN0:G-MP0:G"],
+                                      ["PO","RN","MN2:G-MP2:G"]
+                                    ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["A", "M1","MN0:G"], ["CN", "M1"], ["C", "M1"], ["RN","M1","MN2:G" ],["Y","M1","MN1:D"]]
+          }
+        },
+
+
+        { "name": "TAPCELL_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "spice" : [ ".SUBCKT TAPCELL_CV TAP",
+                      "MN1 TAP TAP TAP TAP  NCHDL",
+                      "MP1 TAP TAP TAP TAP  PCHDL",
+                      ".ENDS"],
+          "beforeRoute" : {
+              "addVias" : [ ["M1", "M4", "MN:D",2]],
+              "addVerticalRects" : [ ["M4","M:D",2]],
+              "addDirectedRoutes" : [ ["M1","TAP","MN1:B->MN1:G"],
+                                      ["M1","TAP","MN1:G-|--MN1:S"],
+                                      ["M1","TAP","MN1:G-|--MN1:D"],
+                                      ["M1","TAP","MP:S-|--MP:G"],
+                                      ["M1","TAP","MP:D-|--MP:G"],
+                                      ["M1","TAP","MP:G->MP:B"],
+                                      ["M1","TAP","MN:D-MP:D"]
+                                    ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["TAP", "M1","MN:D" ] ]
+          }
+        },
+        { "name": "DMY_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "spice" : [ ".SUBCKT DMY_CV NC",
+                      "MN1 NC NC NC NC  NCHDL",
+                      "MP1 NC NC NC NC PCHDL",
+                      ".ENDS"],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","NC","MN1:B->MN1:G"],
+                                      ["M1","NC","MN1:G-|--MN1:S"],
+                                      ["M1","NC","MN1:G-|--MN1:D"],
+                                      ["M1","NC","MP:S-|--MP:G"],
+                                      ["M1","NC","MP:D-|--MP:G"],
+                                      ["M1","NC","MP:G->MP:B"],
+                                      ["M1","NC","MN:D-MP:D"]
+                                    ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["NC", "M1","MN:D" ] ]
+          }
+        },
+
+        { "name": "DMY26_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "spice" : [ ".SUBCKT DMY26_CV NC",
+                      "XA NC DMY_CV M=26",
+                      ".ENDS"],
+          "composite" : 1,
+          "afterRoute" : {
+              "addPortOnRects" : [ ["NC", "M1" ] ]
+          }
+        },
+
+        { "name": "TAPCELLB_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "spice" : [ ".SUBCKT TAPCELLB_CV AVSS AVDD",
+                      "MN1 AVSS AVSS AVSS AVSS  NCHDL",
+                      "MP1 AVDD AVDD AVDD AVDD  PCHDL",
+                      ".ENDS"],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","TAP","MN1:B->MN1:G"],
+                                      ["M1","TAP","MN1:G-|--MN1:S"],
+                                      ["M1","TAP","MN1:G-|--MN1:D"],
+                                      ["M1","TAP","MP:S-|--MP:G"],
+                                      ["M1","TAP","MP:D-|--MP:G"],
+                                      ["M1","TAP","MP:G-|--MP:B"]
+                                    ]
+
+          }
+        },
+        { "name": "NRX1_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "rows" : 2,
+          "symbol" : "nor",
+          "setYoffsetHalf" :  "" ,
+          "spice" : [ ".subckt NRX1_CV A B Y AVDD AVSS",
+                      "MN0 Y A AVSS AVSS NCHDL",
+                      "MN1 AVSS B Y AVSS NCHDL",
+                      "MP0 N1 A AVDD AVSS PCHDL",
+                      "MP1 Y B N1 AVSS PCHDL",
+                      ".ends NRX1_CV"],
+          "addSchematicCoordinates" : {
+              "MN0" : [ 1, 0, "R0"],
+              "MP0" : [0.25, 1, "R0"],
+              "MN1" : [ 0.25, 0, "MX"],
+              "MP1" : [0.25, 0.5, "R0"]
+          },
+
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","Y","MN0:D,MN1:S-|--MP1:D"],
+                                      ["M1","N1","MP0:D||MP1:S"],
+                                      ["PO","A","MN0:G-MP0:G"],
+                                      ["PO","B","MN1:G-MP1:G"]
+                                    ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["A", "M1" ,"MN0:G"], ["B", "M1", "MN1:G"], ["Y", "M1", "MN1:S" ]]
+          }
+        },
+        { "name": "ORX1_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "composite" : 1,
+          "symbol" : "or",
+          "spice" : [ ".subckt ORX1_CV A B Y AVDD AVSS",
+                      "XA1 A B YN AVDD AVSS NRX1_CV",
+                      "XA2 YN Y AVDD AVSS IVX1_CV",
+                      ".ends "],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","YN","XA2:MN0:G-|--XA1:MN1:S","offsetlow"]
+                                    ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["A", "M1" ,"XA1:MN0:G"], ["B", "M1", "XA1:MN1:G"], ["Y", "M1", "XA2:MN1:S" ]]
+          }
+        },
+        { "name" : "ORX2_CV",
+          "inherit" : "ORX1_CV",
+          "spiceRegex" : [ ["IVX1","IVX2"] ]
+        },
+        { "name" : "ORX4_CV",
+          "inherit" : "ORX1_CV",
+          "spiceRegex" : [ ["IVX1","IVX4"] ]
+        },
+
+        { "name" : "ORX8_CV",
+          "inherit" : "ORX1_CV",
+          "spiceRegex" : [ ["IVX1","IVX8"] ]
+        },
+
+        { "name": "BFX1_CV" ,
+          "class" : "Layout::LayoutDigitalCell",
+          "rows" : 2,
+          "setYoffsetHalf" : "",
+
+          "spice" : [ ".subckt BFX1_CV A Y AVDD AVSS",
+                      "MN0 AVSS A B AVSS NCHDL",
+                      "MN1 Y B AVSS AVSS NCHDL",
+                      "MP0 AVDD A B AVSS PCHDL",
+                      "MP1 Y B AVDD AVSS PCHDL",
+                      ".ends BFX1_CV"],
+          "addSchematicCoordinates" : {
+              "MN0" : [ 0.25, 0, "MX"],
+              "MP0" : [0.25, 0.5, "MX"],
+              "MN1" : [ 1, 0, "R0"],
+              "MP1" : [1, 0.5, "R0"]
+          },
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","B","MN1:G>-|--MN0:S"],
+                                      ["PO","A","MN0:G-MP0:G"] ,
+                                      ["PO","B","MN1:G-MP1:G"] ,
+                                      ["M1","B","MN0:S-|--MP0:S"],
+                                      ["M1","Y","MN1:D-|--MP1:D"]
+                                    ]
+          },
+          "afterRoute"  : {
+              "addPortOnRects" : [ ["A","M1","MN0:G"], ["Y","M1","MN1:D"]]
+          }
+        },
+        { "name": "NDX1_CV" ,
+          "class" : "Layout::LayoutDigitalCell",
+          "rows" : 2,
+          "symbol" : "nand",
+          "setYoffsetHalf" :  "" ,
+          "spice" : [ ".subckt NDX1_CV A B Y AVDD AVSS",
+                      "MN0 N1 A AVSS AVSS NCHDL",
+                      "MN1 Y B N1 AVSS NCHDL",
+                      "MP0 Y A AVDD AVSS PCHDL",
+                      "MP1 AVDD B Y AVSS PCHDL",
+                      ".ends NDX1_CV"],
+          "addSchematicCoordinates" : {
+              "MN0" : [ 0.25, 0, "R0"],
+              "MN1" : [ 0.25, 0.5, "R0"],
+              "MP0" : [0.25, 1, "R0"],
+              "MP1" : [1, 1, "MX"]
+          },
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","Y","MN1:D-|--MP1:S,MP0:D"],
+                                      ["M1","N1","MN0:D||MN1:S"],
+                                      ["PO","A","MN0:G-MP0:G"],
+                                      ["PO","B","MN1:G-MP1:G"]
+                                    ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["A", "M1" ,"MN0:G"], ["B", "M1", "MN1:G"], ["Y", "M1", "MN1:D" ]]
+          }
+        },
+
+        { "name": "ANX1_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "composite" : 1,
+          "symbol" : "and",
+          "spice" : [ ".subckt ANX1_CV A B Y AVDD AVSS",
+                      "XA1 A B YN AVDD AVSS NDX1_CV",
+                      "XA2 YN Y AVDD AVSS IVX1_CV",
+                      ".ends "],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","YN","XA2:MN0:G-|--XA1:MN1:D"]
+                                    ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["A", "M1" ,"XA1:MN0:G"], ["B", "M1", "XA1:MN1:G"], ["Y", "M1", "XA2:MN0:D" ]]
+          }
+        },
+        { "name" : "ANX2_CV",
+          "inherit" : "ANX1_CV",
+          "spiceRegex" : [ ["IVX1","IVX2"] ]
+        },
+        { "name" : "ANX4_CV",
+          "inherit" : "ANX1_CV",
+          "spiceRegex" : [ ["IVX1","IVX4"] ]
+        },
+        { "name" : "ANX8_CV",
+          "inherit" : "ANX1_CV",
+          "spiceRegex" : [ ["IVX1","IVX8"] ]
+        },
+
+
+
+        { "name" : "IVX1_EV", "inherit" : "IVX1_CV", "spiceRegex" :[ ["NCHDL","NCHDEL"],["PCHDL","PCHDEL"]]},
+        { "name" : "NDX1_EV", "inherit" : "NDX1_CV", "setYoffsetHalf" : "none", "spiceRegex" :[ ["NCHDL","NCHDEL"],["PCHDL","PCHDEL"]]},
+        { "name" : "NRX1_EV", "inherit" : "NRX1_CV", "setYoffsetHalf" : "none", "spiceRegex" :[ ["NCHDL","NCHDEL"],["PCHDL","PCHDEL"]]},
+        { "name" : "ANX1_EV", "inherit" : "ANX1_CV", "spiceRegex" :[ ["_CV","_EV"]],
+          "afterRoute" : {
+              "addPortOnRects" : [ ["Y", "M1"]]
+          }
+        },
+        { "name" : "ORX1_EV", "inherit" : "ORX1_CV",  "spiceRegex" :[ ["_CV","_EV"]],
+          "afterRoute" : {
+              "addPortOnRects" : [ ["Y", "M1"]]
+          }
+        },
+        { "name" : "TAPCELL_EV", "inherit" : "TAPCELL_CV", "spiceRegex" :[ ["NCHDL","NCHDEL"],["PCHDL","PCHDEL"]]},
+
+        { "name": "DFQNX1_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "symbol" : "dfqn",
+          "composite" : 1,
+          "description" : "D-flip-flop with QN output",
+          "spice" : [".subckt DFQNX1_CV D CK Q QN AVDD AVSS",
+                     "XA0 AVSS TAPCELL_CV",
+                     "XA1 CK CKN AVDD AVSS IVX1_CV",
+                     "XA2 CKN CKB AVDD AVSS IVX1_CV",
+                     "XA3 D CKN CKB A0 AVDD AVSS IVTRIX1_CV",
+                     "XA4 A1 CKB CKN A0 AVDD AVSS IVTRIX1_CV",
+                     "XA5 A0 A1 AVDD AVSS IVX1_CV",
+                     "XA6 A1 CKB CKN QN AVDD AVSS IVTRIX1_CV",
+                     "XA7 Q CKN CKB QN AVDD AVSS IVTRIX1_CV",
+                     "XA8 QN Q AVDD AVSS IVX1_CV",
+                     ".ends"
+                    ],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","CKN","XA1:MP0:D-|--XA2:MP0:G","offsetlowend"],
+                                      ["M1","CKB","XA2:MP0:D-|--XA3:CN,XA7:CN"],
+                                      ["M1","CKB","XA4:C-|--XA2:MN0:D"],
+                                      ["M1","CKB","XA6:C-|--XA2:MN0:D","offsetlow"],
+                                      ["M2","CKN","XA4:CN,XA6:CN-|--XA1:MP0:D"],
+                                      ["M2","CKN","XA3:C-|--XA1:MN0:D","offsetlow"],
+                                      ["M2","CKN","XA7:C-|--XA6:CN"],
+                                      ["M1","A0","XA3:Y-|XA4:Y"],
+                                      ["M1","A0","XA6:Y-|XA7:Y"],
+                                      ["M2","A0","XA5:MN0:G-|--XA4:MN1:D"],
+                                      ["M2","A1","XA5:MP0:D-|--XA4:MP0:G,XA6:MP0:G"],
+                                      ["M1","QN","XA8:MN0:G-|--XA7:MN1:D"],
+                                      ["M2","Q","XA8:MP0:D-|--XA7:MP0:G"]
+                                    ],
+              "addConnectivityRoutes" : [
+
+              ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["D", "M1"], ["CK", "M1"], ["Q", "M1","XA8:MN0:D"],["QN","M1","XA7:MN1:D"] ]
+          }
+        },
+        { "name": "DFRNQNX1_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "symbol" : "dfrnqn",
+          "composite" : 1,
+          "description" : "D-flip-flop with QN output, and active low reset",
+          "spice" : [".subckt DFRNQNX1_CV D CK RN Q QN AVDD AVSS",
+                     "XA0 AVSS TAPCELL_CV",
+                     "XA1 CK RN CKN AVDD AVSS NDX1_CV",
+                     "XA2 CKN CKB AVDD AVSS IVX1_CV",
+                     "XA3 D CKN CKB A0 AVDD AVSS IVTRIX1_CV",
+                     "XA4 A1 CKB CKN A0 AVDD AVSS IVTRIX1_CV",
+                     "XA5 A0 A1 AVDD AVSS IVX1_CV",
+                     "XA6 A1 CKB CKN QN AVDD AVSS IVTRIX1_CV",
+                     "XA7 Q CKN CKB RN QN AVDD AVSS NDTRIX1_CV",
+                     "XA8 QN Q AVDD AVSS IVX1_CV",
+                     ".ends"
+                    ],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","CKN","XA1:MP0:D-|--XA2:MP0:G","offsetlowend"],
+                                      ["M1","CKB","XA2:MP0:D-|--XA3:CN,XA7:CN"],
+                                      ["M1","CKB","XA4:C-|--XA2:MN0:D"],
+                                      ["M1","CKB","XA6:C-|--XA2:MN0:D","offsetlow"],
+                                      ["M2","CKN","XA4:CN,XA6:CN-|--XA1:MP0:D"],
+                                      ["M2","CKN","XA3:C-|--XA1:MN1:D","offsetlow"],
+                                      ["M3","CKN","XA7:C-|--XA6:CN"],
+                                      ["M1","A0","XA3:Y-|XA4:Y"],
+                                      ["M2","A0","XA6:Y-|--XA7:Y"],
+                                      ["M2","A0","XA5:MN0:G-|--XA4:MN1:D"],
+                                      ["M2","A1","XA5:MP0:D-|--XA4:MP0:G,XA6:MP0:G"],
+                                      ["M1","QN","XA8:MN0:G>-|--XA7:MN1:D"],
+                                      ["M2","Q","XA8:MP0:D-|--XA7:MP0:G"],
+                                      ["M2","RN","XA1:MN1:G|-XA7:MN2:G"]
+                                    ],
+              "addConnectivityRoutes" : [
+
+              ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["D", "M1"], ["CK", "M1"], ["Q", "M1","XA8:MN0:D"],["QN","M1","XA7:MN1:D"] ,["RN","M2","XA1:MN1:G"]]
+          }
+        },
+
+        { "name" : "RG10X1_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "composite" : 1,
+		  "noPowerRoute" : 1,
+          "alternateGroups" : 1,
+		  "boundaryIgnoreRouting" : 0,
+          "description" : "D-flip-flop with QN output",
+          "spice" : [".subckt RG10X1_CV DI<9> DI<8> DI<7> DI<6> DI<5> DI<4> DI<3> DI<2> DI<1> DI<0> CK DO<9> DO<8> DO<7> DO<6> DO<5> DO<4> DO<3> DO<2> DO<1> DO<0> AVDD AVSS",
+                     "XA0 DI<0> CK DO<0> NC0 AVDD AVSS DFQNX1_CV",
+                     "XB1 DI<1> CK DO<1> NC1 AVDD AVSS DFQNX1_CV",
+                     "XC2 DI<2> CK DO<2> NC2 AVDD AVSS DFQNX1_CV",
+                     "XD3 DI<3> CK DO<3> NC3 AVDD AVSS DFQNX1_CV",
+                     "XE4 DI<4> CK DO<4> NC4 AVDD AVSS DFQNX1_CV",
+                     "XF5 DI<5> CK DO<5> NC5 AVDD AVSS DFQNX1_CV",
+                     "XG6 DI<6> CK DO<6> NC6 AVDD AVSS DFQNX1_CV",
+                     "XH7 DI<7> CK DO<7> NC7 AVDD AVSS DFQNX1_CV",
+                     "XI8 DI<8> CK DO<8> NC8 AVDD AVSS DFQNX1_CV",
+                     "XJ9 DI<9> CK DO<9> NC9 AVDD AVSS DFQNX1_CV",
+                     ".ends"
+                    ],
+          "afterPlace" : {
+              "addRouteRings" : [
+                  ["M1","CK","b"]
+              ],
+              "addPowerRings" :[
+                  ["M1","AVSS","t"],
+                  ["M1","AVDD","t"]
+
+              ]
+          },
+          "beforeRoute" : {
+              "addPowerConnections" : [
+                  ["AVSS","X","top"],
+                  ["AVDD","X","top"]
+              ],
+              "addRouteConnections" : [
+                  ["CK","X","bottom","M2"]
+              ],
+              "addConnectivityRoutes" : [
+
+              ]
+          },
+          "afterRoute" : {
+
+              "addPortOnGraphs" : [ ["DI|DO|CK"]]
+          }
+        },
+        { "name" : "RGRN10X1_CV",
+          "inherit" : "RG10X1_CV",
+		  "noPowerRoute" : 1,
+		  "boundaryIgnoreRouting" : 0,
+          "spiceRegex" : [ ["DFQNX1","DFRNQNX1"], [" CK"," CK RN "]],
+          "afterPlace": {
+              "addRouteRings" :[
+                  ["M1","RN","b"]
+              ]
+          },
+          "beforeRoute" : {
+              "addRouteConnections" : [
+                  ["RN","X","bottom","M4"]
+              ]
+
+          }
+        },
+        { "name" : "RGRN8X1_CV",
+          "inherit" : "RG10X1_CV",
+		  "noPowerRoute" : 1,
+		  "boundaryIgnoreRouting" : 0,
+          "spiceRegex" : [ ["DFQNX1","DFRNQNX1"], [" CK"," CK RN "],["X(I8|J9).*DFRNQNX1_CV",""],["D(I|O)<(9|8)>",""]],
+          "afterPlace": {
+              "addRouteRings" :[
+                  ["M1","RN","b"]
+              ]
+          },
+          "beforeRoute" : {
+              "addRouteConnections" : [
+                  ["RN","X","bottom","M4"]
+              ]
+
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["DO<7>","M1","X.7:Q"],
+                                   ["DO<6>","M1","X.6:Q"],
+                                   ["DO<5>","M1","X.5:Q"],
+                                   ["DO<4>","M1","X.4:Q"],
+                                   ["DO<3>","M1","X.3:Q"],
+                                   ["DO<2>","M1","X.2:Q"],
+                                   ["DO<1>","M1","X.1:Q"],
+                                   ["DO<0>","M1","X.0:Q"]
+
+                                 ]
+          }
+        },
+        { "name" : "RGRNH12X1_CV",
+          "inherit" : "RG10X1_CV",
+		  "noPowerRoute" : 1,
+		  "boundaryIgnoreRouting" : 0,
+          "description" : "D-flip-flop with QN output",
+          "spice" : [".subckt RGRNH12X1_CV DI<11> DI<10> DI<9> DI<8> DI<7> DI<6> DI<5> DI<4> DI<3> DI<2> DI<1> DI<0> CK RN DO<11> DO<10> DO<9> DO<8> DO<7> DO<6> DO<5> DO<4> DO<3> DO<2> DO<1> DO<0> AVDD AVSS",
+                     "XA0 DI<0> CK RN DO<0> NC0 AVDD AVSS DFRNQNX1_CV",
+                     "XB1 DI<1> CK RN DO<1> NC1 AVDD AVSS DFRNQNX1_CV",
+                     "XC2 DI<2> CK RN DO<2> NC2 AVDD AVSS DFRNQNX1_CV",
+                     "XD3 DI<3> CK RN DO<3> NC3 AVDD AVSS DFRNQNX1_CV",
+                     "XE4 DI<4> CK RN DO<4> NC4 AVDD AVSS DFRNQNX1_CV",
+                     "XF5 DI<5> CK RN DO<5> NC5 AVDD AVSS DFRNQNX1_CV",
+                     "XG6 DI<6> CK RN DO<6> NC6 AVDD AVSS DFRNQNX1_CV",
+                     "XH7 DI<7> CK RN DO<7> NC7 AVDD AVSS DFRNQNX1_CV",
+                     "XI8 DI<8> CK RN DO<8> NC8 AVDD AVSS DFRNQNX1_CV",
+                     "XJ9 DI<9> CK RN DO<9> NC9 AVDD AVSS DFRNQNX1_CV",
+                     "XK10 DI<10> CK RN DO<10> NC10 AVDD AVSS DFRNQNX1_CV",
+                     "XL11 DI<11> CK RN DO<11> NC11 AVDD AVSS DFRNQNX1_CV",
+                     ".ends"
+                    ],
+          "afterPlace": {
+              "addRouteRings" :[
+                  ["M1","RN","b"]
+              ]
+          },
+          "beforeRoute" : {
+              "addRouteConnections" : [
+                  ["RN","X","bottom","M4"]
+              ]
+
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["DO<11>","M1","X.11:Q"],
+                                   ["DO<10>","M1","X.10:Q"],
+                                   ["DO<9>","M1","X.9:Q"],
+                                   ["DO<8>","M1","X.8:Q"],
+                                   ["DO<7>","M1","X.7:Q"],
+                                   ["DO<6>","M1","X.6:Q"],
+                                   ["DO<5>","M1","X.5:Q"],
+                                   ["DO<4>","M1","X.4:Q"],
+                                   ["DO<3>","M1","X.3:Q"],
+                                   ["DO<2>","M1","X.2:Q"],
+                                   ["DO<1>","M1","X.1:Q"],
+                                   ["DO<0>","M1","X.0:Q"]
+
+                                 ]
+          },
+          "afterPaint" :{
+
+          }
+        },
+        { "name" : "RGRN12X1_CV",
+          "class" : "Layout::LayoutDigitalCell",
+          "composite" : 1,
+          "alternateGroups" : 0,
+		  "boundaryIgnoreRouting" : 0,
+          "description" : "D-flip-flop with QN output",
+          "spice" : [".subckt RGRN12X1_CV DI<11> DI<10> DI<9> DI<8> DI<7> DI<6> DI<5> DI<4> DI<3> DI<2> DI<1> DI<0> CK RN DO<11> DO<10> DO<9> DO<8> DO<7> DO<6> DO<5> DO<4> DO<3> DO<2> DO<1> DO<0> AVDD AVSS",
+                     "XA0 DI<0> CK RN DO<0> NC0 AVDD AVSS DFRNQNX1_CV",
+                     "XA1 DI<1> CK RN DO<1> NC1 AVDD AVSS DFRNQNX1_CV",
+                     "XA2 DI<2> CK RN DO<2> NC2 AVDD AVSS DFRNQNX1_CV",
+                     "XA3 DI<3> CK RN DO<3> NC3 AVDD AVSS DFRNQNX1_CV",
+                     "XA4 DI<4> CK RN DO<4> NC4 AVDD AVSS DFRNQNX1_CV",
+                     "XA5 DI<5> CK RN DO<5> NC5 AVDD AVSS DFRNQNX1_CV",
+                     "XA6 DI<6> CK RN DO<6> NC6 AVDD AVSS DFRNQNX1_CV",
+                     "XA7 DI<7> CK RN DO<7> NC7 AVDD AVSS DFRNQNX1_CV",
+                     "XA8 DI<8> CK RN DO<8> NC8 AVDD AVSS DFRNQNX1_CV",
+                     "XA9 DI<9> CK RN DO<9> NC9 AVDD AVSS DFRNQNX1_CV",
+                     "XA10 DI<10> CK RN DO<10> NC9 AVDD AVSS DFRNQNX1_CV",
+                     "XA11 DI<11> CK RN DO<11> NC9 AVDD AVSS DFRNQNX1_CV",
+                     ".ends"
+                    ],
+
+          "afterPlace": {
+              "addRouteRings" :[
+                  ["M1","RN","b"],
+                  ["M2","CK","l",1,4]
+              ],
+              "addPowerRings" :[
+              ]
+          },
+          "beforeRoute" : {
+              "addRouteConnections" : [
+                  ["RN","X","bottom","M4"],
+                  ["CK","X","left","M2"]
+              ],
+              "addPowerConnections" : [
+
+              ]
+
+
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["DO<11>","M1","X.11:Q"],
+                                   ["DO<10>","M1","X.10:Q"],
+                                   ["DO<9>","M1","X.9:Q"],
+                                   ["DO<8>","M1","X.8:Q"],
+                                   ["DO<7>","M1","X.7:Q"],
+                                   ["DO<6>","M1","X.6:Q"],
+                                   ["DO<5>","M1","X.5:Q"],
+                                   ["DO<4>","M1","X.4:Q"],
+                                   ["DO<3>","M1","X.3:Q"],
+                                   ["DO<2>","M1","X.2:Q"],
+                                   ["DO<1>","M1","X.1:Q"],
+                                   ["DO<0>","M1","X.0:Q"]
+
+                                 ]
+          },
+          "afterPaint" :{
+
+          }
+        },
+
+        { "name" : "RGRN6X1_CV",
+          "inherit" : "RGRN12X1_CV",
+		  "boundaryIgnoreRouting" : 0,
+          "spice" : [".subckt RGRN6X1_CV  DI<5> DI<4> DI<3> DI<2> DI<1> DI<0> CK RN  DO<5> DO<4> DO<3> DO<2> DO<1> DO<0> AVDD AVSS",
+                     "XA0 DI<0> CK RN DO<0> NC0 AVDD AVSS DFRNQNX1_CV",
+                     "XA1 DI<1> CK RN DO<1> NC1 AVDD AVSS DFRNQNX1_CV",
+                     "XA2 DI<2> CK RN DO<2> NC2 AVDD AVSS DFRNQNX1_CV",
+                     "XA3 DI<3> CK RN DO<3> NC3 AVDD AVSS DFRNQNX1_CV",
+                     "XA4 DI<4> CK RN DO<4> NC4 AVDD AVSS DFRNQNX1_CV",
+                     "XA5 DI<5> CK RN DO<5> NC5 AVDD AVSS DFRNQNX1_CV",
+                     ".ends"
+                    ]
+
+
+        },
+
+        {
+            "comment" : "------------------------------------------------------------" ,
+            "comment" : "         Pure layout cells, no schematic ",
+            "comment" : "------------------------------------------------------------"
+        },
+        { "name" : "DM1T2X1_CV",
+          "schematic" : 0,
+		  "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "composite" : 1,
+          "spice" : [".subckt DM1T2X1_CV S E Y<1> Y<0> AVDD AVSS",
+                     "XA1 S SN AVDD AVSS IVX1_CV",
+                     "XA2 SN E Y<0> AVDD AVSS ANX1_CV",
+                     "XA3 S E Y<1> AVDD AVSS ANX1_CV",
+                     ".ends"
+                    ],
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M1","SN","XA2:A-|--XA1:MN0:D"],
+                                      ["M1","E","XA2:XA1:MP1:G-|XA3:XA1:MP1:G"],
+                                      ["M1","S","XA1:MP0:G|-XA3:XA1:MP0:G"]
+                                    ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["S", "M1" ,"XA1:MN0:G"], ["E", "M1", "XA2:XA1:MP1:G"], ["Y<0>", "M1", "XA2:XA2:MP0:D" ], ["Y<1>", "M1", "XA3:Y" ]]
+          }
+        },
+
+        { "name" : "DM2T4X1_CV",
+          "schematic" : 0,
+		  "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "composite" : 1,
+          "spice" : [".subckt DM2T4X1_CV  S<1> S<0> E Y<3> Y<2> Y<1> Y<0> AVDD AVSS",
+                     "XA0 AVSS TAPCELL_CV",
+                     "XA1 S<1> E E0<1> E0<0> AVDD AVSS DM1T2X1_CV",
+                     "XA2 S<0> E0<0> Y<1> Y<0> AVDD AVSS DM1T2X1_CV",
+                     "XA3 S<0> E0<1> Y<3> Y<2> AVDD AVSS DM1T2X1_CV",
+                     ".ends"
+                    ],
+          "beforeRoute" : {
+              "addConnectivityRoutes" : [
+                  ["M2","E0<0>","-|--","onTopL"],  ["M2","E0<1>","-|--","offsetlowend"], ["M2","S<0>","|-","onTopT"]
+              ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [   ["S<1>", "M1"],  ["S<0>", "M1"],  ["Y<3>", "M1"],
+                                     ["Y<2>", "M1"],  ["Y<1>", "M1"],  ["Y<0>", "M1"],        ["E", "M1"]]
+          }
+        },
+
+        { "name" : "DM3T8X1_CV",
+          "schematic" : 0,
+		  "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "composite" : 1,
+          "spice" : [".subckt DM3T8X1_CV S<2> S<1> S<0> E Y<7> Y<6> Y<5> Y<4> Y<3> Y<2> Y<1> Y<0> AVDD AVSS",
+                     "XA3 S<1> S<0> E0<0> Y<3> Y<2> Y<1> Y<0> AVDD AVSS DM2T4X1_CV",
+                     "XA1 S<2> E E0<1> E0<0> AVDD AVSS DM1T2X1_CV",
+                     "XA2 S<1> S<0> E0<1> Y<7> Y<6> Y<5> Y<4> AVDD AVSS DM2T4X1_CV",
+                     ".ends"
+                    ],
+
+
+          "beforeRoute" : {
+
+
+
+              "addConnectivityRoutes" : [
+                  ["M2","E0<0>","-|--","onTopT"],  ["M2","E0<1>","-|--","offsetlowend"], ["M2","S<0>","|-","onTopT"], ["M2","S<1>","-|","onTopT"]
+              ]
+          }
+        },
+        { "name" : "TMX8T1X1_CV",
+          "composite" : 1,
+		  "boundaryIgnoreRouting" : 0,
+          "schematic" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "beforeRoute" : {
+              "addDirectedRoutes" : [ ["M2","Y_INT","XA10:A-|--XA24:Y"]],
+              "addConnectivityRoutes" : [
+                  ["M2","Y_INT","-|--","onTopT",2,"IVTRIC"],
+                  ["M1","EN","-|--",""]
+              ]
+          }
+        },
+        { "name" : "MUX8T1_CV",
+          "composite" : 1,
+          "alternateGroups" : 1,
+          "schematic" : 0,
+		  "noPowerRoute" : 1,
+		  "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "afterPlace": {
+              "addPowerRings" :[
+                  ["M1","AVSS","t"],
+                  ["M1","AVDD","t"]
+
+              ]
+          },
+          "beforeRoute" : {
+              "addPowerConnections" : [
+                  ["AVSS","X","top"],
+                  ["AVDD","X","top"]
+              ],
+              "addDirectedRoutes" : [ ],
+              "addConnectivityRoutes" : [
+                  ["M3","E","--|-","onTopR,offsethighend"],
+                  ["M3","^C<(7|5|3|1)>$","-|--","onTopL"],
+                  ["M3","^C<(6|4|2|0)>$","--|-","onTopR,offsethighend"]
+
+              ]
+          }
+        },
+
+        { "name" : "SHREG8",
+          "composite" : 1,
+          "schematic" : 0,
+		  "boundaryIgnoreRouting" : 0,
+		  "noPowerRoute" : 1,
+          "class" : "Layout::LayoutDigitalCell",
+          "beforeRoute" : {
+              "addConnectivityRoutes" : [
+                  ["M3","D<(7|5|3|1)>","-|--", "onTopL,offsethigh,track28"],
+                  ["M3","D<(6|4|2)>","-|--", "onTopL"]
+              ]
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["D<7>","M1","X:DO<7>"],
+                                   ["D<6>","M1","X:DO<6>"],
+                                   ["D<5>","M1","X:DO<5>"],
+                                   ["D<4>","M1","X:DO<4>"],
+                                   ["D<3>","M1","X:DO<3>"],
+                                   ["D<2>","M1","X:DO<2>"],
+                                   ["D<1>","M1","X:DO<1>"],
+                                   ["D<0>","M1","X:DO<0>"]
+
+
+                                 ]
+          }
+        },
+        { "name" : "SREGLD8",
+          "composite" : 1,
+          "schematic" : 0,
+		  "noPowerRoute" : 1,
+		  "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "beforeRoute" : {
+              "addConnectivityRoutes" : [
+                  ["M3","D<","-|--", "onTopL,offsethigh"],
+                  ["M4","ARST_N_1V0","||",""]
+              ]
+          }
+        },
+
+        { "name" : "CKDIV2",
+          "composite" : 1,
+          "schematic" : 0,
+		  "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "beforeRoute" : {
+              "addDirectedRoutes" : [
+                  ["M3","QNI", "XA4:XA3:MP0:G-|--XA3:MP0:D"]
+              ],
+              "addConnectivityRoutes" : [
+                  ["M1","CKIB","--|-", "onTopB"],
+                  ["M2","CKIN","-|--", "onTopL"],
+                  ["M3","CKI$","|-", "onTopT"],
+                  ["M1","CKO50DC","-|--", "onTopL"]
+              ]
+          }
+        },
+        { "name" : "CKDIV256",
+          "composite" : 1,
+		  "noPowerRoute" : 1,
+          "schematic" : 0,
+          "alternateGroups" : 1,
+		  		  "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "afterPlace" :{
+              "addPowerRings" :[
+                  ["M1","AVSS","t"],
+                  ["M1","AVDD_1V0","t"]
+
+              ]
+
+          },
+          "beforeRoute" : {
+              "addRouteRings" :[
+                  ["M2","ARST_N_1V0","tbrl"]
+              ],
+              "addPowerConnections" : [
+                  ["AVSS","X","top"],
+                  ["AVDD_1V0","X","top"]
+              ],
+              "addRouteConnections" : [
+
+
+              ],
+              "addDirectedRoutes" : [
+                  ["M2","CKO<7>","XA2:XA1:A-|--XA1:XA5:Y"],
+                  ["M2","CKO<6>","XA2:XA5:Y-|--XB3:XA1:A","track22,offsetlowend"],
+                  ["M2","CKO<5>","XB3:XA5:Y-|--XB4:XA1:A"],
+                  ["M2","CKO<4>","XB4:XA5:Y-|--XC5:XA1:A","track10,offsetlowend"],
+                  ["M2","CKO<3>","XC6:XA1:A-|--XC5:XA5:Y"],
+                  ["M2","CKO<2>","XC6:XA5:Y-|--XD7:XA1:A","track22,offsetlowend"],
+                  ["M2","CKO<1>","XD7:XA5:Y-|--XD8:XA1:A"]
+
+              ],
+              "addConnectivityRoutes" : [
+
+              ]
+          },
+          "afterRoute" :{
+              "addRouteConnections" : [
+                  ["ARST_N_1V0","XA","left","M2","noend,nostart"],
+                  ["ARST_N_1V0","XB3|XC5","bottom","M4"],
+                  ["ARST_N_1V0","XB4|XC6","top","M4"],
+                  ["ARST_N_1V0","XD","right","M2","nostart"]
+              ]
+
+          }
+        },
+        { "name" : "SCX1_EV",
+          "rows" : 5,
+          "class" : "Layout::LayoutDigitalCell",
+		  "boundaryIgnoreRouting" : 0,
+          "beforeRoute" : {
+              "addDirectedRoutes" :[
+                  ["M1","NC","XA4b:D-|--XB4:S"],
+                  ["M1","NC","XB3a:S-|--XB3b:S"],
+                  ["M2","NC","XA5:S-|--XB3b:S","nostart"],
+                  ["M2","NC","XA3:D-|--XB1:D",""]
+              ],
+              "addConnectivityRoutes" : [
+                  ["M1","net10","-|--","",2,""],
+                  ["M1","net13","--|-","",2,""],
+                  ["M2","A$","-|--","onTopL",2,""],
+                  ["M1","sco","-|--","onTopR",2,"PCH"],
+                  ["M1","sco","--|-","onTopL",2,"NCH"],
+                  ["M1","AVDD","--|-","onTopL",2,"NCH"],
+                  ["M1","Y","-|--","onTopL",2]
+
+              ]
+
+          }
+        },
+        { "name" : "DI_1V8_ST28N",
+          "boundaryIgnoreRouting" : 0,
+          "composite" : 1,
+          "noPowerRoute" : 1,
+          "schematic" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "afterPlace" :{
+              "addPowerRings" :[
+                  ["M1","AVDD_1V0","t"],
+                  ["M1","AVSS","btrl"]
+              ]
+          },
+          "beforeRoute" : {
+              "addPowerConnections" : [
+                  ["AVDD_1V0","XA","top"],
+                  ["AVSS","XXC","left"],
+                  ["AVSS","XA4|XA2","bottom"]
+              ],
+              "addConnectivityRoutes" : [
+                  ["M3","FILT_O","--|-","onTopR"],
+                  ["M2","SCHMITT_O","-|--"],
+                  ["M1","INV_O","-|--"]
+
+              ]
+          }
+        },
+
+        { "name" : "BUSDRV",
+          "schematic" : 0,
+          "composite" : 1,
+		  "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+
+          "afterPlace" :{
+              "addRouteRings" :[
+                  ["M1","A<11>","l",1,4],
+                  ["M1","A<10:0>","l",1,4],
+                  ["M1","Y<11>","r",1,4],
+                  ["M1","Y<10:0>","r",1,4]
+              ]
+          },
+          "beforeRoute" : {
+              "addRouteConnections" : [
+                  ["A<","X","left","M2"],
+                  ["Y<","X","right","M2"]
+
+              ],
+
+              "addDirectedRoutes" :[
+              ],
+              "addConnectivityRoutes" : [
+                  ["M1","E","-|--"]
+              ]
+
+          },
+          "afterRoute" : {
+              "trimRouteRings" : [
+                  [ "A<","left","t"],
+                  [ "Y<","right","b"]
+              ]
+          }
+        },
+        { "name" : "DODRV",
+          "schematic" : 0,
+          "composite" : 1,
+		  "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "afterPlace" :{
+              "addRouteRings" :[
+                  ["M1","A<11>","l",1,4],
+                  ["M1","A<10:0>","l",1,4],
+                  ["M1","Y<11>","r",1,4],
+                  ["M1","Y<10:0>","r",1,4]
+              ]
+          },
+          "beforeRoute" : {
+              "addRouteConnections" : [
+                  ["A<","X","left","M2"],
+                  ["Y<","X","right","M2"]
+
+              ],
+
+              "addDirectedRoutes" :[
+              ],
+              "addConnectivityRoutes" : [
+                  ["M1","net17","--|-","onTopB"]
+              ]
+
+          }
+        }
+        ,
+        { "name" : "MUX8X11",
+          "schematic" : 0,
+          "composite" : 1,
+          "noPowerRoute" : 1,
+		  "boundaryIgnoreRouting" : 0,
+          "class" : "Layout::LayoutDigitalCell",
+          "afterPlace" :{
+              "addPowerRings" :[
+                  ["M1","AVDD","b"],
+                  ["M1","AVSS","b"]
+
+              ],
+              "addRouteRings" :[
+                  ["M2","Z<11>","t",1,4],
+                  ["M2","Z<10:0>","t"],
+                  ["M2","T<7>","br",1,4],
+                  ["M2","T<6:0>","br"],
+                  ["M2","E","b"]
+              ]
+          },
+          "beforeRoute" : {
+              "addPowerConnections" : [
+                  ["AVDD","X","bottom"],
+                  ["AVSS","X","bottom"]
+              ],
+
+              "addRouteConnections" : [
+                  ["Z<","X","top","M1"],
+                  ["T<","X[^J]","bottom","M3"],
+                  ["T<","XJ","right","M3"],
+                  ["E","X","bottom","M4"]
+
+
+              ],
+
+              "addDirectedRoutes" :[
+              ],
+              "addConnectivityRoutes" : [
+              ]
+
+          },
+          "afterRoute" : {
+              "addPortOnRects" : [ ["AVDD","M4"], ["AVSS","M4"]],
+              "trimRouteRings" : [
+                  [ "T<","bottom","l"],
+                  [ "Z<","top","lr"]
+              ]
+
+          }
+        }
+    ]
+
+}

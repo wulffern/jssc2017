@@ -1,0 +1,1028 @@
+
+% Version history:
+% Version 1 (2016-11-22) = Rev 2859
+% Version 2 (2017-01-24) = Rev 2888
+% Version 3 (2017-03-02) = Rev 2893
+
+
+\newcommand{\technm}{28 nm FDSOI}
+
+\title{A Compiled 9-bit 20 MS/s 3.5 fJ/conv.step SAR ADC in {\technm} for
+  Bluetooth Low Energy Receivers}
+%
+\author{Carsten~Wulff, \textit{Member, IEEE},
+  Trond~Ytterdal, \textit{Senior Member, IEEE} }
+
+
+\maketitle
+
+
+\begin{abstract}
+This paper presents a low power 9-bit compiled
+successive-approximation register (SAR) analog-to-digital converter (ADC) for
+Bluetooth low energy receivers. The
+ADC is compiled from a SPICE netlist, a technology rule file, and an object definition file
+into a design rule check (DRC) and layout versus schematic (LVS) clean layout and schematic in {\technm}. The compiled SAR ADC
+reduces the design time necessary to port to a new
+technology, and to demonstrate
+technology porting the same SAR ADC architecture is compiled in {\technm}
+with IO transistors. This work also includes a comparator
+clock generation loop that \edit{uses} the bottom plate of the capacitive
+digital-to-analog converter.  The proposed
+compiled core transistor SAR ADC achieves state-of-the-art FoM of 2.7
+fJ/conv.step at 2 MS/s, and 3.5 fJ/conv.step at
+20 MS/s with an area of 0.00312 mm\textsuperscript{2}.
+
+Carsten Wulff (Corresponding author), carsten.wulff@ntnu.no,
++4793200714, Trond Ytterdal, trond.ytterdal@ntnu.no,  Department of Electronics and Telecommunications, NTNU,
+7491 Trondheim, Norway.
+\end{abstract}
+\begin{IEEEkeywords}
+analog layout,  analog layout synthesis, ADC, analog-to-digital
+conversion, FDSOI, successive approximation, low-power, Bluetooth low energy
+\end{IEEEkeywords}
+
+\section{Introduction} \label{introduction}
+
+%-----------------------------------------------------------------
+% Why are low power ADCs important in BLE recievers?
+%-----------------------------------------------------------------
+\IEEEPARstart{A}{} low-power, medium resolution analog-to-digital converter (ADC) is a key building block in
+Bluetooth\textsuperscript{\textregistered} low energy \cite{ble} receivers. Low
+power in the ADC is essential, as it can take up a large portion of the
+receiver power budget, especially since two ADCs are usually required in receivers with quadrature down-conversion; one for
+the real branch, and one for the imaginary branch.
+
+%-----------------------------------------------------------------
+% Why is reducing the design time important?
+%-----------------------------------------------------------------
+In a
+Bluetooth\textsuperscript{\textregistered} low energy receiver the
+design time of the ADC can be high compared to design time of the anti-alias filter,
+low-noise amplifier, and mixer.
+%-----------------------------------------------------------------
+% What is state of the art within EDA tools?
+%-----------------------------------------------------------------
+Reducing design time of ADCs is an active research area, and part of
+this research is analog layout generation.
+
+%-----------------------------------------------------------------
+% Why is analog layout generation so hard?
+%-----------------------------------------------------------------
+One of the challenges with analog layout generation is the large
+solution space. A schematic designer has freedom
+to choose from any architecture, any combination of transistors, and a
+large number of transistor widths and lengths. The schematic
+alone is not sufficient to fully determine the layout. For example, the
+schematic does not contain placement information for layout, since the
+optimum layout placement might be different from optimal schematic
+placement.
+
+Analog layout generation has a long history with works from the
+previous century \cite{rijmenants89,bruce96}, but state-of-the-art
+analog layout generation, as reviewed in \cite{martin13}, is not
+widely adopted. More promising research avenues avoid the challenge of analog layout
+generation from schematics, by not having a schematic.  Recently, ADCs have been compiled in a digital flow
+\cite{weaver14,fahmy15}, and although the ENOB was less than 6-bit, it is an interesting approach. A similar
+approach has been used successfully for all-digital PLLs \cite{deng15}.
+
+%-----------------------------------------------------------------
+% How does what we do make it easier to generate layout?
+%-----------------------------------------------------------------
+This work, first introduced at a conference \cite{wulff16}, presents a
+method where the layout is not
+generated based on drawn schematics. The ADC is described
+using an approach borrowed from object oriented
+programming.
+A custom compiler is used to compile the ADC. The ADC is described in
+a SPICE netlist, an
+object definition file, and a technology rule file. The compiler outputs
+a schematic and layout in SKILL\footnote{SKILL is the Lisp variant
+  script language used in Cadence Virtuoso} and GDSII.
+The output can be loaded into
+Cadence Virtuoso and a standard design flow can be used for
+parasitic extraction, simulation, and verification.
+
+To reduce the solution space, the presented method uses a limited set of circuit blocks, a low
+complexity ADC architecture, and proposes a technology
+independent method for generating a design rule check (DRC) and layout
+versus schematic (LVS) clean schematic and layout in multiple
+technologies. Technology independence in this work has been
+modeled with a tapeout of one ADC in {\technm} with
+core transistors, and another in {\technm} with IO transistors.
+
+%-----------------------------------------------------------------
+% Why is it not enough to generate a ADC?
+%-----------------------------------------------------------------
+To demonstrate that an ADC can be compiled is not sufficient to
+displace traditional analog design methodology. A compiled ADC is of
+limited use unless it can be demonstrated that the performance can match
+state-of-the-art ADCs.
+%-----------------------------------------------------------------
+% Explain how we plan to demonstrate technology independence?
+%-----------------------------------------------------------------
+To the best of
+the authors knowledge, this work presents
+the most efficient compiled ADC and achieves a FoM comparable to the
+state-of-the-art \cite{harpe12,patil16,liu16}  (as surveyed in
+\cite{murmann16}) with a smaller area, making it
+perfectly suited for Bluetooth\textsuperscript{\textregistered} low
+energy receivers.
+
+
+%-----------------------------------------------------------------
+% Explain organization of the paper
+%-----------------------------------------------------------------
+The remainder of this paper is organized as follows: Section \ref{architecture}  describes the
+SAR ADC architecture, while Section \ref{compiler} describes the
+compiler. \edit{ Section \ref{designmethod} describes the design methodology
+using the compiler.} Measurement results are shown in Section \ref{measurements}
+and conclusions given in Section \ref{conclusion}.
+
+
+
+
+\section{SAR ADC Architecture} \label{architecture}
+\moved{
+%-----------------------------------------------------------------
+% Introduce bit-cycling
+%-----------------------------------------------------------------
+The successive-approximation register (SAR) ADC architecture proposed
+in this work includes a technique that \edit{uses} the bottom plate
+of the capacitive digital-to-analog converter (CDAC) in the bit-cycling clock generation loop.
+%-----------------------------------------------------------------
+% Explain the problem with clock generation loops in prior art
+%-----------------------------------------------------------------
+Two clocks are commonly used in SAR ADCs. One to set the sample rate,
+which in this work is applied externally to the ADC, and one bit-cycling
+clock, which can be generated locally in the ADC. A typical SAR ADC
+architecture can be seen in \reg{fig_prior}{a}, with a comparator,
+SAR logic, and the CDAC. The comparator is
+forced into reset during sampling ({$CK=1$}), and it triggers when the sample clock turns
+off. It is common to use detection methods to determine when the
+comparator has made a decision, and use this to trigger the subsequent resets of
+the comparator. Such self-timed loops, shown in
+\reg{fig_prior}{a},
+are common in prior art \cite{harpe12,harpe12a,fredenburg12,kapusta13}.
+
+One of the challenges in a self-timed loop is
+to allow sufficient time for the CDAC to settle. Each time
+the comparator makes a decision, one (or more) of the capacitors are
+switched and the resulting transient must settle to the accuracy of the
+ADC.  It is possible to use circuit
+techniques like delay cells \cite{harpe12,harpe12a,fredenburg12}, or replica delays \cite{kapusta13} to adjust the time
+between comparator decisions. Common to these techniques is that they try to model the
+required CDAC settling time, and allow enough time before
+the comparator makes the next decision.
+%-----------------------------------------------------------------
+% Explain how what we do is the solution to clock loops
+%-----------------------------------------------------------------
+In this work, we use the bottom plate of the
+CDAC directly in the comparator clock generation loop to improve robustness,
+and ensure sufficient time for CDAC settling, as shown in \reg{fig_prior}{b}.
+}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\myfigwidthc]{fig_prior_art}
+\caption{Comparator clock generation in: (a) Prior works, (b) This work.}
+\label{fig_prior}
+\end{figure}
+
+%-----------------------------------------------------------------
+% Introduce the sar architecture
+%-----------------------------------------------------------------
+The SAR ADC architecture used to demonstrate the compiler is shown in
+\reg{fig_sar}{a}.  It has NMOS
+boot-strapped input switches, a strong-arm comparator with kick-back compensation
+\cite{varzaghani13}, and a metal-oxide-metal finger CDAC.
+
+\begin{figure*}[t]
+\centerline{\includegraphics[width=\myfigwidthl]{fig_sar_logic}}
+\caption{Proposed SAR ADC architecture with: (a) Block diagram, (b) Enable
+  logic, (c) CDAC state control, (d) Clock generation.}
+\label{fig_sar}
+\end{figure*}
+
+
+%-----------------------------------------------------------------
+% Explain timing in the SAR
+%-----------------------------------------------------------------
+Sampling of the differential input signal ($V_P - V_N$) is
+controlled by the sample clock $CK$. The sample clock has a
+duty-cycle of less than 25 \% to increase the time available for the
+SAR algorithm. The first SAR logic block
+($LOGIC[8]$) is enabled when $CK=0$, the next logic block ($LOGIC[7]$) is
+enabled when $LOGIC[8]$ has completed and sets $EO=1$. The bit-cycling continues until $EO=1$ for the last logic block
+($LOGIC[0]$).
+
+%-----------------------------------------------------------------
+% Explain the comparator
+%-----------------------------------------------------------------
+\deleted{
+The comparator clock ($CK\_CMP$) is generated by the loop that
+starts with the comparator outputs ($P$ and $N$) into the SAR logic
+blocks and out from the $CO$ output. A pulse
+signal is generated internally in the SAR logic, and the $CI$ and $CO$
+form a chain of $OR$ gates.
+% with the last connected
+%through NOT gate $X1$ and AND gate $X2$ to $CK\_CMP$.  The comparator
+%outputs $P$ and $N$ are reset to zero when $CK\_CMP$ is zero.
+%When the comparator makes a decision, either $P$ or $N$
+%will be high.
+The digital output from each stage is $D_{P1}$.
+}
+
+%-----------------------------------------------------------------
+% Explain the CDAC
+%-----------------------------------------------------------------
+The bottom plate of the CDAC capacitors
+are controlled directly by the $D_{P0}$, $D_{P1}$, $D_{N0}$ and
+$D_{N1}$ signals, which switch between ground and the reference
+voltage. The reference voltage is at the same voltage as the supply
+voltage. The
+first five stages of the ADC use split monotonic switching \cite{liu10a} to reduce the common
+mode variation, while the last four stages use monotonic switching
+\cite{liu10}.
+\edit{ In a monotonic based scheme, an 8-bit CDAC is
+sufficient. The SAR ADC in this
+work is intended as building block for noise-shaped SAR ADCs
+\cite{fredenburg12}, where the last residue is needed, thus it uses
+a 9-bit CDAC.}
+
+%-----------------------------------------------------------------
+% Explain the unit transistor, and the compromise
+%-----------------------------------------------------------------
+\secedit{
+The compiled ADC uses unit transistors for all blocks in the design, as explained below.
+}
+\edit{
+One unit transistor size is used for both PMOS and NMOS.
+The \textit{W = 258 nm} and \textit{L =  30 nm} for the core
+transistors, and \textit{W =
+344 nm}  and  \textit{L = 180 nm} for the IO transistors.  A small unit
+transistor was chosen to reduce the power consumption in the
+comparator and digital logic. The schematic and
+sizing of the comparator \cite{varzaghani13} is shown in
+\req{fig_comp}. The boot-strapped switch transistor has four unit transistors in parallel.
+}
+
+\begin{figure}[tb]
+\centerline{\includegraphics[width=\myfigwidth]{fig_comparator}}
+\caption{\edit{Strong-arm comparator with kick-back
+  compensation. Transistors without numbers are unit size, while
+  transistors with numbers are parallel combinations of unit transistors.}}
+\label{fig_comp}
+\end{figure}
+
+
+%-----------------------------------------------------------------
+% Introduce the SAR logic
+%-----------------------------------------------------------------
+The SAR logic  consists of three parts:
+enable logic (\reg{fig_sar}{b}), CDAC state control
+(\reg{fig_sar}{c}), and clock generation loop
+(\reg{fig_sar}{d}).
+%\subsection{SAR Logic Reset}
+During sampling of the ADC input the SAR logic is reset ($CK=1$). In the
+enable logic of the first  stage $EI=\overline{CK}=0$, and node $A=1$,
+while $EO=0$. Thus $EI=EO=0$ of all subsequent stages. The CDAC
+state control has $D_{P0}=D_{N1}=0$ while $D_{N0}=D_{P1}=1$. In the clock generation
+loop of the first stage $CI=0$, and since node $B=0$, then
+$CO=0$. Accordingly $CI=CO=0$ for all subsequent stages.
+
+%\subsection{Comparator Decision}
+The first comparator decision is initiated by $CK=0$ (steps 1 and 2 in \req{fig_timing}). At that point the
+first latch ($M_{N0}-M_{N2}, M_{P0}$) in the enable logic is armed, and as soon as $(P||N)=1$,
+then $A=0$. This arms the second latch ($M_{N3},M_{P1}-M_{P3}$) in the enable
+logic. Still $EO=0$.
+\deleted{
+The CDAC state control is also triggered by $(P||N)=1$ (step 3 in
+\req{fig_timing}).
+%If $P=1$ then $D_{P0}=1$
+%and $D_{N0}=0$. If $N=1$ then $D_{N1}=1$ and $D_{P1}=0$.
+%This
+%either adds, or subtracts charge from the top plate of the CDAC.
+}
+
+\begin{figure}[t]
+\centerline{\includegraphics[width=\myfigwidth]{fig_timing}}
+\caption{Timing diagram of the SAR logic.}
+\label{fig_timing}
+\end{figure}
+
+\deleted{
+%The transition of $D_{P1},D_{P0},D_{N0},D_{N1}$ can be slow for the
+%most significant bit due to the
+%high capacitance, especially if the ADC runs at
+%a low voltage since the inverters (\reg{fig_sar}{c}) will have lower
+%drive strength.
+The advantage of the bit-cycling clock generation loop in this work, is
+that it includes the transition of $D_{P1}$ and $D_{N0}$.
+}
+\deleted{
+Since either $D_{P1}$ or $D_{N0}$ is guaranteed to transition
+from high to low, these signals can be used to trigger comparator
+reset.  When either $D_{P1}$ or $D_{N0} = 0$ then $M_{P6}$ or $M_{P7}$ turns on, and sets
+node $B=1$, and consequently $CO = 1$ (step 4 in \req{fig_timing}).
+
+%The delay from $P||N=1$ to
+%$CO=1$ will depend on the process corner, CDAC capacitor variation, temperature,  and supply voltage. As a re%sult the CDAC will be given sufficient
+%time to settle, independent of process, voltage, and
+%temperature (PVT).
+}
+
+%\subsection{Comparator Reset}
+The comparator in \req{fig_comp} is reset when $CK\_CMP=0$, which
+occurs when $CO=1$, since $CK=0$, and
+for the last stage $EO=0$ (steps 5 and 6 in
+\req{fig_timing}). The comparator will set signals $P=N=0$, which
+turns on transistors $M_{P2}$ and $M_{P1}$, and sets $EO=1$ (step
+7). This enables the next stage, and locks the state of the
+CDAC state control,
+since $M_{N5}$ and $M_{N8}$ turn off. Also, $CO=0$ and in the end $CK\_CMP=1$ (step 8 and 9 in \req{fig_timing}),
+which clocks the comparator once more, and the next bit is decided.
+\deleted{
+The bit-cycling ends when $EO=1$ for the last stage.
+}
+
+
+%\subsection{Simulation of clock generation loop}
+%-----------------------------------------------------------------
+% Extend with simulation of the different times from cadence
+%-----------------------------------------------------------------
+% \reg{fig_sim}{a} shows a simulation of the core SAR ADC at a supply
+% voltage of 0.49 V.
+%At this low voltage
+%there is a long delay through the comparator to $P$ and $N$, and
+%further through the CDAC state control before $D_{N0}$ transitions to
+%zero.  The fall-time from 90 \% to 10 \% of $D_{N0}$ is
+%1.11 ns. In terms of time constants the fall-time is
+%$ 2.2 \uptau$ for a single pole system.\footnote{ Calculated from $t =
+%  \uptau[ln(\frac{1}{1-0.9}) - ln(\frac{1}{1-0.1})] = 2.2\uptau$} Thus the time constant for
+%node $D_{N0}$ is approximately 0.5ns. The required settling
+%time for an accuracy within 1 LSB with 9-bit resolution is $-ln\frac{1}{512} \times \uptau <$
+%6.23 $\times$ 0.5 ns $=$ 3.12 ns. The simulated delay from $D_{N0}$ to
+%rising edge of $CK\_CMP$ is 7.11 ns, thus the CDAC has
+%sufficient settling time for 9-bit accuracy.
+
+%-----------------------------------------------------------------
+% High simulation
+%-----------------------------------------------------------------
+%\reg{fig_sim}{b} shows the core SAR ADC at a supply voltage of 0.71 V. In this
+%case the fall time of $D_{N0}$ is 0.315 ns, thus the required delay for
+%9-bit settling is
+%less than $6.23 \times \frac{0.315ns}{2.2} =$ 0.89 ns.  The
+%simulated delay from $D_{N0}$ to rising edge of $CK\_CMP$ is
+%1.68 ns for \reg{fig_sim}{b}, as a result there is sufficient
+%settling time.
+
+%\begin{figure}[t]
+%\centerline{\includegraphics[width=\myfigwidth]{fig_simulation}}
+%\caption{Simulation result of core SAR ADC at: (a) 2 MS/s and 0.49 V,
+%  (b) 20 MS/s and 0.71 V.}
+%\label{fig_sim}
+%\end{figure}
+
+
+%The maximum sample rate of the ADC will depend on
+%PVT, thus in an industrial design one must ensure sufficient margin for
+%sample rate over PVT. The SAR ADC architecture in this work is well suited to a
+%calibration loop where the supply voltage is adjusted until $EO$ of
+%the last logic stage is detected. In a Bluetooth\textsuperscript{\textregistered} low energy system this can be implemented at
+%radio power up. In this work, however, the supply voltage is fed from
+%an external source, and the supply voltage calibration is a manual
+%process.
+
+
+
+\section{Compiler} \label{compiler}
+%-----------------------------------------------------------------
+% Reiterate what the problem is
+%-----------------------------------------------------------------
+The key contribution in this work is to speed up the design time
+of SAR ADCs, and reduce the effort necessary to port a design to
+another technology. Schematic capture, simulation,  layout, and
+parasitic netlist simulation, is a time consuming endeavor for
+ADCs. For
+charge based SAR ADCs the small unit capacitance make them sensitive to poor
+ layout. It is common to spend time tracking down fF
+parasitics, and redoing  layout. The design time would be
+shorter if one could generate DRC/LVS clean layout in minutes, instead
+of days. Rapid ADC generation would allow for more iterations before tapeout, and
+could even allow automatic exploration of the design space. It could
+also enable rapid porting to another technology.
+
+%-----------------------------------------------------------------
+% Re-explain how this work fixes the problem
+%-----------------------------------------------------------------
+The compiler in this work (a Perl script) compiles a core transistor
+SAR ADC into GDSII in $2.7$ seconds on a Macbook Air with 1.7GHz Intel Core i7. The Perl version of the
+compiler is closed source, but there is a reduced feature set open
+source version written in C++ \cite{ciccreator16}, which
+compiles a SPICE netlist, an object definition file, and a rule file of a core transistor SAR ADC into GDSII in $0.35$ seconds.
+
+%-----------------------------------------------------------------
+% Introduce the SPICE netlist
+%-----------------------------------------------------------------
+\deleted{
+The SPICE netlist does not
+contain transistor lengths or transistor widths, rather it contains
+references to unit transistors.  The unit transistor can be
+series connected, or parallel connected.
+}
+
+%-----------------------------------------------------------------
+% Introduce the object definition file
+%-----------------------------------------------------------------
+The object definition
+file is written in JavaScript Object Notation (JSON) \cite{json16}, a common text
+data format, which is supported in most programming languages. The object definition file, which contains the definition of the unit transistor, does not contain absolute
+dimensions, thus it is technology independent.  The object definition file also defines
+the routing of blocks in the ADCs.
+%-----------------------------------------------------------------
+% Introduce the rule file
+%-----------------------------------------------------------------
+Absolute dimensions, and technology specific information are defined
+in a rule file.
+
+
+The remainder of this Section is organized as follows, the rule file is described in Section \ref{rule}, while the unit
+transistor is described in Section \ref{unittransistor}, and the unit
+capacitor in Section \ref{unitcapacitor}. The place and route of the
+design is described in Section \ref{placeroute}, while the top level
+SAR ADC layout is described in Section \ref{overallayout}.
+
+\subsection{Technology rule file} \label{rule}
+%-----------------------------------------------------------------
+% Introduce the rule file
+%-----------------------------------------------------------------
+The rule file contains the GDSII layer numbers, GDSII data-type, layer
+material definitions, what cuts \edit{(vias)} to use for transitions
+between layers, and design rules.
+
+% -----------------------------------------------------------------
+% Lambda rules
+%-----------------------------------------------------------------
+All rules, like poly width, cut size, metal width, metal
+spacing and metal cut enclosure are based on a dimensionless parameter
+$\mathit{GAMMA}$. The layout rules in this work are inspired by early work on dimensionless layout
+rules, or LAMBDA rules, where the LAMBDA parameter was equal to half the minimum feature
+size ($\mathit{F/2}$) \cite{mead.conway}. The dimensionless rule approach was further extended
+to nano-scale technologies with $\mathit{GAMMA = F/4}$ in
+\cite{lewyn09,lewyn11}.
+
+In this
+work the $\mathit{GAMMA}$ has been redefined to $\mathit{F/6}$ to allow better
+granularity of the layout rules.
+%-----------------------------------------------------------------
+% Explain the rules
+%-----------------------------------------------------------------
+
+In the rule file for  {\technm}
+ there are 140 unique rules, but 95 of those are for the
+different metals and cuts (spacing, width, enclosure).
+
+%-----------------------------------------------------------------
+% Explain materials and stack
+%-----------------------------------------------------------------
+The compiler can automatically insert cuts between layers, and to build
+the cuts the material type (active, cut, metal, poly), and the connect stack (PO to CO to
+M1, M1 to VIA1 to M2), is defined in the
+rule file for each of the layers.
+
+
+\subsection{Unit transistor} \label{unittransistor}
+%-----------------------------------------------------------------
+% Explain that the objdef uses classes
+%-----------------------------------------------------------------
+
+The structure of the object definition file is
+inspired by object oriented programming, where all objects are
+instances of a class. The class is defined in the compiler,
+and the compiler has classes for transistors, capacitors, resistors,
+digital cells and complex cells (CDAC, SAR ADC).
+
+%-----------------------------------------------------------------
+% Explain why traditional pcells are bad
+%-----------------------------------------------------------------
+The layout rules for nano-scale
+transistors contain complex spacing rules. In the {\technm}
+design rule deck there are close to 5000 design rules.
+Not all these rules relate to transistors, but it is complex to design a DRC clean
+programmable transistor cell that can support multiple technologies,
+from multiple foundries.
+%-----------------------------------------------------------------
+% Explain our solution, the unit transistor
+%-----------------------------------------------------------------
+Instead of a complex programmable transistor cell this work
+implements a simplified transistor cell.  The layout of the transistor can be
+seen in \req{fig_dmos}.
+
+\begin{figure}[t]
+\centering
+\centerline{\includegraphics[width=\myfigwidtha]{fig_dmos}}
+\caption{Unit transistor layout.}
+\label{fig_dmos}
+\end{figure}
+
+%-----------------------------------------------------------------
+% Introduce grids
+%-----------------------------------------------------------------
+To avoid complex rules the rule file defines two numbers, the vertical grid size and
+the horizontal grid size. \edit{For the ADCs in {\technm} the grids are the same (\textit{86
+    nm}), but two numbers are defined in the compiler for future flexibility. The
+compiler also supports modification of the grid on a per cell basis,
+and multiple unit transistors in a design.}
+
+%-----------------------------------------------------------------
+% Explain how it solves the complexity problem
+%-----------------------------------------------------------------
+The grid size controls the spacing
+between poly gates, the active enclosure of cuts, the metal enclosure of
+cuts, the dummy poly to active spacing and the poly to cut
+spacing. To improve
+manufacturability the transistor has two cuts for drain, source and poly,
+regular poly pitch to improve poly critical dimension (CD) and
+enlarged metal one rectangles to satisfy minimum metal
+area DRC rules.
+There are vertical routing channels between
+active and gate, and gate and bulk contact to simplify
+routing. On neighboring transistors the dummy poly can be overlapped to
+ensure regular poly pitch over large distances.
+
+%-----------------------------------------------------------------
+% Introduce how transistors are defined
+%-----------------------------------------------------------------
+The unit transistor is described in the object definition file as an ASCII code as shown in
+\req{fig_dmos_json}.
+\begin{figure}[t]
+\centering
+\centerline{\includegraphics[width=2.5in]{fig_dmos_json}}
+\caption{\edit{Object definition of the unit transistor (DMOS) and the PMOS (PCHDL).}}
+\label{fig_dmos_json}
+\end{figure}
+%-----------------------------------------------------------------
+% Explain how the ASCII works
+%-----------------------------------------------------------------
+The ASCII has a $ N x M $ matrix where each cell
+is one grid in size. A $-$ character means empty space, $x$
+means the grid is filled. $m$ means the grid is filled horizontally,
+but the height of the rectangle is the minimum routing width for that
+layer. For $w$ the grid is also filled horizontally, but the height
+of the rectangle is the normal routing width for that layer. $K$, $C$,
+and $c$ make cuts to the next layer. $D,G,S,B$ are the
+familiar ports of the transistor.
+
+%-----------------------------------------------------------------
+% Introduce how PMOS and NMOS differs very slightly, same size
+%-----------------------------------------------------------------
+The PMOS and NMOS have the same physical dimensions, thus they
+differ only by their respective implant layers and well definitions. The
+compiler supports the object oriented programming concept of
+inheritance, where an object can inherit all features of a
+parent. One example is the PMOS in \req{fig_dmos_json}, which inherits the
+DMOS. The function \textit{addEnclosures} searches the parent
+cell and finds the OD rectangles, adds P-implant layer, and low threshold
+voltage layer with enclosures defined in the rule file.  This object
+oriented design approach allows complex cells to be constructed
+from small modifications of existing cells.
+
+To make the unit transistor DRC clean requires an
+iterative process where the transistor layout is compiled, DRC checks
+are run, and grid sizes adjusted until the transistor is DRC
+clean. With this simplified transistor there is a risk that it will
+not fit all technologies, but so far DRC clean transistors have been
+compiled in {\technm}, 28 nm, 65 nm and 55 nm.
+
+
+
+\subsection{Unit capacitor} \label{unitcapacitor}
+%CAPs
+% 1
+% 1.978
+% 4.263
+% 7.836
+% 7.83
+% 8.201
+% 16.04
+% 16.13
+% 32.16
+% 32.12
+% 64.29
+% 64.25
+% 128.6
+% 128.7
+%-----------------------------------------------------------------
+% Introduce the unit capacitor
+%-----------------------------------------------------------------
+\edit{The building block for the 9-bit CDAC is a 5-bit CDAC cell, with an additional
+unit capacitor to make 32 unit capacitors. A 3D view \cite{GDS3D} can
+be seen in
+\reg{fig_cap32}{a}, and the cell in \reg{fig_cap32}{b}. } The bottom
+plate is a metal finger in metal four and metal
+three. The capacitor top plate surrounds the bottom
+plate fingers in metal four.  The bottom plate routing, in metal one,
+is covered by a ground shield in metal two to reduce the parasitic
+coupling to the top plate. \edit{
+The compiler has a built-in class to make this cell, and the class gets the metal width, capacitor
+finger spacing and metal route spacing from the rule file.
+
+The four MSB in the 9-bit CDAC uses 15 cells (bit 8 = 8 cells, bit 7 = 4 cells, bit 6 =
+2 cells, bit 5  = 1 cell). Bit 4 uses one cell, but half the capacitors
+are connected to ground. Bit 3, bit 2, bit 1 and bit 0 share a cell,
+thus in total 17 cells are used in the 9-bit CDAC. The netlist for the IO ADC with the
+detailed CDAC cell arrangement is available at \cite{ciccreator16}.
+
+The total capacitance seen from the top plate node of the 9-bit CDAC is
+simulated at 169 fF. The parasitic capacitance to ground is simulated at
+67 fF. The remaining 102 fF is the combination of the 512 unit
+capacitors. The unit capacitor is simulated at 0.2 fF in {\technm}.
+}
+
+
+\begin{figure}[t]
+\centerline{\includegraphics[width=\myfigwidthb]{fig_capacitors_vertical}}
+\caption{\edit{Layout of the 5-bit CDAC cell used in the 9-bit CDAC with: (a) A
+  3D view, (b) The 32 unit capacitor cells.}}
+\label{fig_cap32}
+\end{figure}
+
+
+\subsection{Place and Route} \label{placeroute}
+%-----------------------------------------------------------------
+% Introduce the netlist
+%-----------------------------------------------------------------
+The layout of the enable logic from \reg{fig_sar}{b} can be seen in
+\req{fig_sarmx},  with a 3D view \cite{GDS3D} in
+\reg{fig_sarmx}{a}. The enable logic layout in \reg{fig_sarmx}{d} has been compiled from the  input files into
+{\LaTeX} \cite{latex16} with \textit{cic2tikz} \cite{ciccreator16}  to improve figure
+readability, thus it does not include the implant layers, or well definitions.
+\begin{figure*}[t]
+%\centering
+  \centerline{\includegraphics[width=\myfigwidthl]{fig_saremx}}
+\caption[Caption without FN]{The enable logic with: (a)  3D layout, (b) SPICE netlist (c) Object definition (d) Layout.}
+\label{fig_sarmx}
+\end{figure*}
+
+%-----------------------------------------------------------------
+% Explain key features
+%-----------------------------------------------------------------
+The placement of instances in the
+layout is determined by the order of instances in the SPICE netlist
+(\reg{fig_sarmx}{b}). The
+instance name (i.e. $MN0$) is used to
+group elements. It is the group name, defined as the characters up to
+the first number (i.e $MN$), that determines whether row or column number
+is incremented.  The first transistor, $MN0$, is placed in
+column zero and row zero, as seen in \reg{fig_sarmx}{d}. If the next instance has the same group name the
+row number is incremented. Thus all $MN$ transistors will be placed on
+top of each other. If the
+next instance has a different group name, for example $MP$, the row
+number is reset and the column number is incremented. For example, instance
+$MP0$ will be placed in row zero and column one, while $MP1$ to $MP3$
+ are placed on top of $MP0$.
+
+%-----------------------------------------------------------------
+% Introduce routing
+%-----------------------------------------------------------------
+The compiler does not contain an auto-router. It contains
+routing instructions to route circuits, thus a designer has to specify exactly the
+necessary routes for the circuit blocks. The compiler does, however, contain
+instructions to find ports, perform simple routes, and do layer stack
+transitions.
+
+The routes are defined in the object definition file, and the object
+definition of the enable logic is shown in
+\reg{fig_sarmx}{c}. The enable logic is an object of a class that
+has support functions for digital cells. For example, the class automatically adds routes in metal
+four for VDD and VSS, as seen in \reg{fig_sarmx}{a}.
+Only the
+outline is shown for the VDD and VSS in \reg{fig_sarmx}{d} to make the metal one routing visible.
+
+There are two types of route instructions in \reg{fig_sarmx}{c},
+a connectivity route, and  a directed
+route. A connectivity route can search the circuit for instance ports, and
+find all instance ports that belong to a net name. The net name
+match is performed with regular expressions
+\cite{masterRegex}. Route number 3 in
+\reg{fig_sarmx}{c} is a connectivity route
+for net
+$EO$ between $M_{N3}$ and $M_{P1}$. The instructions for this route are {\small\texttt{['M1','EO','--|-','onTopR']}}, which
+translates to: Find all instance ports in metal one ({\small\texttt{'M1'}}) that match the regular
+expression {\small\texttt{'EO'}}, use rightmost port as the start of the route ({\small\texttt{'onTopR'}}),  and route
+in a left, up or down, left pattern ({\small\texttt{'--|-'}}) to the other ports. This
+forms the route marked with $3$ in \reg{fig_sarmx}{d}.
+
+For the net $A$ in \reg{fig_sarmx}{b} the connectivity route is
+not sufficient, as a connectivity route
+would route from the gate of $MP3$ to the gate of $MN3$ in metal one,
+thus creating a short. The directed route is used in these cases to
+customize the route. For net $A$ there are three directed routes
+(route number 6, 7, 8). The instructions for route number 6 is
+{\small\texttt{['PO','A','MN3:G-MP3:G']}}, which translates to: Find
+instance  {\small\texttt{'MN3'}}, check if the instance has a port
+called  {\small\texttt{'G'}} in poly, and route
+in poly ({\small\texttt{'PO'}}) horizontally to an instance with name  {\small\texttt{'MP3'}} and port  {\small\texttt{'G'}}.
+
+%-----------------------------------------------------------------
+% Justify the time consumption of the SAR routing
+%-----------------------------------------------------------------
+The complete object definition file contains object definitions for all the blocks in
+the ADC. Most of the lines in the object definition file are route
+instructions, and it requires effort from an analog designer to
+define the routes of a complete ADC, but this is a one time
+effort. Once the routes are defined they can scale to multiple
+technologies without change. The reason it scales is because route information is void
+of technology information.
+
+
+
+\subsection{Top level SAR ADC layout} \label{overallayout}
+The object definition of the SAR ADC top level \edit{uses} a SAR ADC class in
+the compiler. The layout placement in this class is controlled
+by the SPICE netlist, but the placement algorithm is different from
+the digital cells. The SAR ADC class assumes that any
+instance in the SPICE netlist with a group name $XCDAC$ is a CDAC. Any instance with group name $XB$ is assumed to
+be a input switch, and instances with group name $XA$ are digital
+cells. Based on these assumptions the compiler places the input switches at the
+bottom, CDAC in the middle, digital cells at the top.
+%-----------------------------------------------------------------
+% Bridge to measurements
+%-----------------------------------------------------------------
+A compiled layout of an IO transistor SAR ADC can be seen in
+\reg{fig_toplevel}{a}, and a core transistor SAR ADC in
+\reg{fig_toplevel}{b}. The layout in \req{fig_toplevel} was compiled from the
+input files into Encapsulated Postscript (EPS)\cite{eps92} with \textit{cic2eps}
+\cite{ciccreator16} to improve figure readability, thus it does not
+include cuts, implant layers, or well definitions.
+
+To port the SAR ADC from core transistors to IO transistors
+required some changes to the compiler inputs. The
+metal spacing was changed in the rule file, which is why the CDAC in
+the IO ADC is taller than in the core ADC. The unit transistor was redefined,  and PMOS and NMOS
+\edit{were} modified to change the implant layers. There were no changes to
+the SPICE netlist. Less than 5 \% of the lines in the input files required
+changes to compile the IO transistor ADC from the core transistor ADC
+input files.
+
+
+
+\begin{figure}[t]
+\centerline{\includegraphics[width=\myfigwidth]{fig_toplevel}}
+\caption[Caption without FN]{\edit{Top level layout for: (a) An IO SAR
+  ADC, (b) A Core SAR ADC.}}
+\label{fig_toplevel}
+\end{figure}
+
+
+
+%\subsection{Porting to another technology} \label{port}
+
+\edit{
+\section{Design Methodology} \label{designmethod}
+
+The ADC design in this work started with an architecture exploration
+using
+\secedit{
+hand analysis and schematics, as shown in
+\req{fig_cic}.
+Compiled cells (5-bit CDAC, transistors) were used as
+schematic building blocks for more complex cells (9-bit CDAC, comparator). }
+When a suitable architecture
+was found, the initial netlist was \secedit{modified to control
+  placement of instances in the layout}, and the routing instructions implemented. As the
+design progressed, more and more of the ADC was compiled. In the end,
+the ADC was fully described by the SPICE netlist, object
+definition file and technology file.
+The architecture schematic was no longer needed, although it was kept
+for most circuits to visualize the implemented architecture.
+Testbenches and extracted parasitic netlist simulations were used to
+verify the physical implementation. It was assumed that the physical verification was sufficient to verify the compiler code.
+\moved{
+The complete object definition file that
+was used to generate the core transistor ADC in this work consists of
+1266 lines of code, but that file generates 21 different SAR ADC variants,
+with 8-bit, 9-bit, 10-bit and 11-bit CDACs.}
+The design effort for
+the initial compiled SAR ADC is estimated at 400
+hours, including development of the compiler code.
+
+It is reasonable to expect that some redesign must be done after
+the initial compile, or indeed porting to another technology.
+The advantage of this work for design and redesign, is
+that changes to the circuit can be done in minutes, and recompiled in seconds.
+For example, changing the width of the unit transistor, as shown in
+\reg{fig_wideadcs}{b}. This allows the analog designer to start
+simulation on extracted netlist early in the design flow, and primarily
+do the optimization for performance, process,
+voltage and temperature on extracted netlist.
+
+The analog designer can also quickly adopt to new design
+requirements. A  noise-shaped SAR ADC (11-bit ENOB simulated) \cite{garvik15}
+was designed with a variant of the 9-bit core ADC in this work as a building
+block. In a noise-shaped SAR ADC the thermal
+noise sampled on the CDAC is
+not shaped by the loop filter, thus \cite{garvik15} required more
+CDAC capacitance. An example of a 9-bit SAR ADC
+variant with more CDAC capacitance, is shown in \reg{fig_wideadcs}{c}.
+
+In the authors experience, there is sufficient support in the compiler classes
+to place and route most analog circuits, but the compiler can only use
+cells that it generates. It cannot use standard-logic cells, or
+layout cells drawn with traditional analog design methodology.
+
+The compiler was also used for support circuits
+outside the ADCs. A digital input pad circuit, shown in \req{fig_methodology}, uses the standard compiler
+classes. Some analog circuits may
+require custom compiler classes, and a
+combination of analog design expertise and programming expertise is
+needed to code the classes.
+
+In \cite{garvik15} compiled cells were used as building blocks,
+\secedit{
+similar to the architecture exploration in this work,
+but the top level layout }was drawn in Cadence Virtuoso. The advantage of the compiler for
+complex analog circuits, for example Bluetooth\textsuperscript{\textregistered} low
+energy receivers, is that key sub-blocks can be quickly
+compiled. As a result, the analog designer can focus the design effort on
+the difficult parts.
+}
+
+
+\begin{figure}[tb]
+\centerline{\includegraphics[width=\myfigwidthb]{fig_process}}
+\caption{\secedit{Design methodology}}
+\label{fig_cic}
+\end{figure}
+
+
+\begin{figure}[tb]
+\centerline{\includegraphics[width=\myfigwidthb]{fig_wideadcs}}
+\caption{\edit{Layout variants of the core ADC with: (a) The original core
+    ADC, (b) A core ADC with wide
+    transistors ($1.72 \mu m$), (c) A core ADC with more CDAC capacitance.}}
+\label{fig_wideadcs}
+\end{figure}
+
+
+
+\begin{figure}[tb]
+%\centerline{\includegraphics[width=\myfigwidth]{fig_methodology}}
+\centerline{\includegraphics[width=\linewidth]{fig_methodology}}
+\caption{\edit{Digital input pad circuit with:
+    (a) Schematic, (b) SPICE netlist, (c) Layout, (d) Object definition.}}
+\label{fig_methodology}
+\end{figure}
+
+\section{Measurement Results} \label{measurements}
+The micrograph can be seen in \reg{fig_die}{a}, and the die measures
+1.04 mm $\times$ 1.04 mm without seal-ring.  The layout is shown in
+\reg{fig_die}{b}, with the IO transistor ADC and core transistor ADC locations
+indicated by arrows. On this die there are seven other compiled SAR ADCs with
+8-bit, 10-bit and 11-bit resolutions.
+The prototype is fabricated in a {\technm} process with an area of
+39 $\mu$m  x 80 $\mu$m = 0.00312 mm\textsuperscript{2} for the core
+transistor SAR ADC, and 40 $\mu$m x 106 $\mu$m =
+0.00424 mm\textsuperscript{2} for the IO transistor SAR ADC, including logic, comparator, CDAC,
+and input switch.
+\begin{figure}[t]
+\centerline{\includegraphics[width=\myfigwidtha]{fig_diephoto}}
+\caption[Caption without FN]{Overall layout with: (a) Micrograph, (b) Chip Layout.}
+\label{fig_die}
+\end{figure}
+
+%-----------------------------------------------------------------
+% Explain measurements of core SAR
+%-----------------------------------------------------------------
+The input signal to the ADCs was supplied from a R\&S SML
+signal generator through a 5th-order passive band-pass
+filter, and the input frequency was selected for coherent sampling. A balun
+was used to convert from single ended to differential, and the balun common
+mode voltage was supplied externally through a resistive divider. The sample clock was
+supplied from a second R\&S SML signal generator at twice the ADC
+sample rate, and an on-chip sine-to-square circuit with a pulse-picking
+divide-by-two  was used to generate the 25 \% duty-cycle. The
+parallel output data was captured with an RTE1022 oscilloscope with
+mixed-signal option. The data was post processed in MATLAB, and a
+Hanning window was used before the FFT.
+
+\begin{figure*}[t!]
+  \centerline{\includegraphics[width=\myfigwidthl]{fig_core_measurements}}
+  \caption{Measurements for core transistor SAR ADC with: (a) Spectrum
+    at 20 MS/s, (b) Spectrum at 2 MS/s, (c) Peak ENOB as a function of
+    supply voltage, (d) SNDR and SFDR as a function of input frequency
+    \edit{at 20 MS/s}.}
+  \label{fig_core}
+\end{figure*}
+Three chips have been measured for the core transistor SAR ADC with
+similar performance. The core
+transistor SAR ADC in this work achieves
+a FoM\footnote{$FoM = P/(2^{ENOB} \times fs)$} of 3.5 fJ/conv.step
+at 20 MS/s, shown in \reg{fig_core}{a}, and 2.7 fJ/conv.step at 2 MS/s (\reg{fig_core}{b}) placing it among the most power
+efficient and area efficient ADCs for its sample rate and
+resolution.
+
+\edit{ The ENOB of the core ADC is limited by thermal noise. The comparator is
+  the likely source of the thermal noise, as the ENOB can be changed
+  by varying the input common mode voltage.}
+The core transistor SAR ADC is functional from
+80 kS/s - 80 MS/s and operates from a single  0.4 V - 1.1 V supply voltage, as
+shown in \reg{fig_core}{c}. The SNDR and SFDR as a function of frequency can
+be seen in \reg{fig_core}{d}.
+\secedit{
+The measured power consumption of the core ADC is
+15.87 $\mu$W at 20 MS/s and 0.94 $\mu$W at 2 MS/s.
+}
+\edit{
+  The measured power consumption of the core ADC CDAC is approximately
+  44 \% at 20 MS/s and approximately 47 \% at 2 MS/s.
+  The simulated power consumption of the core ADC CDAC is 42 \% at 20 MS/s and
+  44 \% at 2 MS/s. The simulated power consumption of the comparator is
+  25 \% at 20 MS/s and 23 \% at 2 MS/s.
+}
+
+
+%-----------------------------------------------------------------
+% Explain measurements of IO SAR
+%-----------------------------------------------------------------
+The spectrum of the IO transistor SAR ADC is shown in
+\req{fig_io}.\footnote{Due to limitations for the IO SAR ADC it is not possible to separate
+the current in pad drivers, and ADC current. The
+load on each pin is at least 4pF, as specified on the RTE1022
+oscilloscope. Accordingly the current for the IO SAR ADC is estimated at
+ADC current  =  542 $\mu$A - average(bit transitions x 10 MHz x 4 pF x
+1.6 V).}
+%-----------------------------------------------------------------
+% Introduce comparison to prior art
+%-----------------------------------------------------------------
+\begin{figure}[t]
+\centerline{\includegraphics[width=\myfigwidth]{fig_io10msps}}
+\caption{Spectrum of IO transistor SAR ADC at 10 MS/s.}
+\label{fig_io}
+\end{figure}
+Table \ref{tab_prior} shows a summary and
+comparison of key measurements with prior-art.
+
+\begin{table}[tb]
+\centering
+\caption{Comparison to prior art.}
+\renewcommand{\arraystretch}{1.3}
+\label{tab_prior}
+\includegraphics[width=\myfigwidthb]{fig_table}
+% \resizebox{\linewidth}{!}{%
+% \begin{tabular}{  l  c  c  c  c  c c  }
+% \toprule
+% 	 & Weaver \cite{weaver14} & Harpe \cite{harpe12} & Patil
+%                                                        \cite{patil16}
+%   & Liu
+%                                                            \cite{liu16} & \multicolumn{2}{c}{This work}
+%   \\
+% \toprule
+%   Technology (nm) & 90 & 90 & 28 FDSOI & 28 &
+%                                                   \multicolumn{2}{c}{28 FDSOI}  \\
+%   Fsample (MS/s) & 21 & 2 & \edit{No sampling} & 100 &  2 & 20  \\
+%   Core area (mm\textsuperscript{2}) & 0.18 & 0.047 & 0.0032 & 0.0047
+%                                                                         &
+%                                                                           \multicolumn{2}{
+%                                                                           c }{0.00312}  \\
+%   \midrule
+%   SNDR (dB) & 34.61 & 57.79 & 40 & 64.43 & 46.43 & 48.84 \\
+%   SFDR (dBc) & 40.81 & 72.33 & 30 &  75.42 & 61.72 & 63.11  \\
+%   ENOB (bits) & 5.45 & 6.7 - 9.4 &6.35 & 10.41  & 7.42 & 7.82  \\
+%   \midrule
+%   Supply (V) & 0.7 & 0.7 & 0.65 & 0.9  & 0.47 & 0.69  \\
+% % \edit{ Ref. pwr (\%)} & - & - & - & - &\edit{ \texttildelow 50} &
+% %                                                                     \edit{
+% %                                                                     \texttildelow
+% %                                                                     44}   \\
+% % \edit{ Other pwr (\%)} & - & - & - &- &\edit{ \texttildelow 50} &
+% %                                                                     \edit{
+% %                                                                     \texttildelow
+% %                                                                     56}  \\
+%   Pwr ($\mu$W) & 1110 & 1.64 -3.56 & 24 & 350 &  0.94 & 15.87 \\
+%   \midrule
+%   Compiled & Yes & No & No & No & \multicolumn{2}{c}{Yes}  \\
+%   FoM (fJ/c.step) & 838 & 2.8 - 6.6 & 3.7 & 2.6 & 2.7 & 3.5 \\
+%   \bottomrule
+% \end{tabular}
+% }
+\end{table}
+
+
+
+\section{Conclusion} \label{conclusion}
+A low power 9-bit compiled SAR ADC has been presented with a comparator
+clock generation loop that \edit{uses} the bottom plate of the CDAC.  The
+ADC was compiled from text input files into a DRC/LVS clean layout and
+schematic in {\technm}.
+The proposed ADC achieves a FoM of 3.5 fJ/conv.step at
+20 MS/s with an area of 0.00312 mm\textsuperscript{2}, and demonstrates
+that a compiled SAR ADC can achieve state-of-the-art performance.
+
+\section*{Acknowledgment}
+Partial funding for this work was obtained from the Norwegian PhD
+Network on Nanotechnology for Microsystems, which is sponsored by the
+Research Council of Norway, Division of Science, under contract
+no. 221860/F60. The authors thank L. Lewyn and H. Garvik for
+technical discussions, and Nordic Semiconductor and D. Engelien-Lopes for donation of time to
+perform this work.

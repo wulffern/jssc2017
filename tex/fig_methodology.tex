@@ -1,0 +1,177 @@
+
+
+\input{../tex/fig_header}
+\input{../tex/legend}
+
+\input{../tex/SAR_ESSCIRC16_28N}
+  \libSARESSCIRConesixtwoeightNtex
+
+\begin{circuitikz}[circuit logic US,
+  transform shape,circuit ee IEC,set make contact graphic= var make contact IEC graphic] 
+%\begin{tikzpicture}[very thin,font=\Large,scale=1,
+%    transform shape]
+
+
+
+  
+  \begin{scope}[shift={(0cm,0cm)},scale=1]
+    
+    \begin{scope}[shift={(3cm,15cm)},scale=1]
+      
+      \newcommand{\ckcmp}{C}
+
+\draw
+
+
+ (0,0) to [resistor={$XC2$}] ++(2,0) to [short,-*] ++(0,0)  
+ to [capacitor={$XC1$}] ++(0,-2)
+ node [ground,rotate=-90,anchor=west] {} 
+ 
+ (4,0) node [not gate,scale=1.5,thick] (i1) {} 
+ (6,0) node [not gate,scale=1.5,thick] (i2) {} 
+ (8,0) node [not gate,scale=1.5,thick] (i3) {} 
+
+(2,0) -- (i1.input)
+(i1.output) -- (i2.input)
+(i2.output) -- (i3.input)
+(i1.center) ++(-0.2,-0.2) -- ++(0.2,0) -- ++(0,0.4) -- ++(0.1,0)
+(i1.center) ++(-0.2,-0.2) -- ++(0.1,0) -- ++(0,0.4) -- ++(0.1,0)
+(i1.north)   node [rground, yscale=-1] {}
+  ++(0,0.3) node [anchor=south] {$AVDD\_1V8$}
+
+(i2.north)   node [rground, yscale=-1] {}
+  ++(0,0.3) node [anchor=south] {$AVDD\_1V0$}
+
+(i3.north)   node [rground, yscale=-1] {}
+  ++(0,0.3) node [anchor=south] {$AVDD\_1V0$}
+ 
+(i1.south) ++(0,-0.3) node [anchor=north] {$XA2$}
+(i2.south) ++(0,-0.3) node [anchor=north] {$XA3$}
+(i3.south) ++(0,-0.3) node [anchor=north] {$XA4$}
+(i3.output) to [short,-o] ++(0.5,0) node [anchor=west] {$TO\_CORE\_1V0$}
+(0,0) to [short,-o] ++(-0,0) node [anchor=east] {$FROM\_PAD\_1V8$}
+;
+
+
+            \end{scope}
+
+          \begin{scope}[shift={(0cm,0cm)},scale=1.8]
+            \pgftext[at=\pgfpoint{0}{0},left,base]
+          {\pgfimage[interpolate=true,height=6.318cm,width=4.852cm]{../eps/DI_1V8_ST28N.eps}}
+\end{scope}
+
+
+\draw[black] (4cm,9.5cm) node[anchor=south] ()
+{$XC2$};
+\draw[black] (3cm,6.35cm) node[anchor=south] ()
+{$XC1$};
+\draw[black] (7.6cm,5.2cm) node[anchor=south] ()
+{$XA2$};
+\draw[black] (7.6cm,7.9cm) node[anchor=south] ()
+{$XA3$};
+\draw[black] (7.6cm,10.1cm) node[anchor=south] () {$XA4$};
+
+\draw[black] (1.5cm,8.7cm) node[anchor=south,font=\small] ()
+{$FROM\_PAD\_1V8$};
+
+\draw[black] (6.7cm,9.3cm) node[anchor=south,font=\small,rotate=90] ()
+{$TO\_CORE\_1V0$};
+
+
+  \begin{scope}[shift={(9cm,3.2cm)},scale=1.2,local bounding box=scope1]
+    \pgftext[at=\pgfpoint{0cm}{0cm},left,base]{
+      \begin{lstlisting}[style=json]
+{ "name" : "DI_1V8_ST28N",
+  "boundaryIgnoreRouting" : 0,
+  "composite" : 1,  "noPowerRoute" : 1,
+  "schematic" : 0,
+  "class" : "Layout::LayoutDigitalCell",
+  "afterPlace" :{
+      "addPowerRings" :[
+          ["M1","AVDD_1V0","t"],
+          ["M1","AVSS","btrl"]
+      ]
+  },
+  "beforeRoute" : {
+      "addPowerConnections" : [
+          ["AVDD_1V0","XA","top"],
+          ["AVSS","XC","left"],
+          ["AVSS","XA4|XA2","bottom"]
+      ],
+      "addConnectivityRoutes" : [
+          ["M3","FILT_O","--|-","onTopR"],
+          ["M2","SCHMITT_O","-|--"],
+          ["M1","INV_O","-|--"]
+
+      ]
+  }
+}
+      \end{lstlisting}
+    }
+
+    \end{scope}
+
+
+
+    \begin{scope}[shift={(9cm,10.4cm)},scale=1.2]
+      \pgftext[at=\pgfpoint{0cm}{0cm},left,base]{
+        \begin{lstlisting}[style=json]
+.SUBCKT DI_1V8_ST28N AVDD_1V0 AVDD_1V8
++ AVSS FROM_PAD_1V8 TO_CORE_1V0
+XC1 FILT_O AVSS  CAPX10_CV angle=180 
+XC2 FROM_PAD_1V8 FILT_O AVSS  RPPO_S0 
++ xoffset=25 yoffset=15
+
+XA5  AVSS  TAPCELL_EV xoffset=20
+XA2 FILT_O SCHMITT_O AVDD_1V8 AVSS SCX1_EV
+
+XA5a  AVSS  TAPCELL_EV  yoffset=20
+XA3 SCHMITT_O INV_O AVDD_1V0 AVSS  IVX1_EV
+
+XA4 INV_O TO_CORE_1V0 AVDD_1V0 AVSS IVX8_CV 
++ yoffset=15 
+XA6  AVSS  TAPCELL_CV 
+
+.ENDS 
+        \end{lstlisting}
+      }
+    \end{scope}
+
+
+\draw[black] (4cm,12.5cm ) node[rotate=0,anchor=center]
+() {{ (a)  }};
+
+\draw[black] (12cm,7.9cm ) node[rotate=0,anchor=center]
+() {{ (b)  }};
+
+\draw[black] (12cm,-1cm ) node[rotate=0,anchor=center]
+() {{ (d)  }};
+
+\draw[black] (4cm,-1cm ) node[rotate=0,anchor=center]
+() {{ (c)  }};
+
+%          \begin{scope}[shift={(6cm,0cm)},scale=1]
+%  \pgftext[at=\pgfpoint{0}{0},left,base]
+%          {\pgfimage[interpolate=true,height=6.361cm,width=6.773cm]{../graphics/sin2square_bw.eps}}
+%\end{scope}
+
+%\draw[white,help lines,step=1cm,line width=1pt] (0,0) grid (15cm,15cm);
+
+%%%HiResBoundingBox: -12.24 -13.68 229.5 473.58
+%\draw[white,line width=2pt] (4.25cm,4.25cm) -- (\xxcore,1cm);
+
+%\draw[black,line width=1pt] (9.75cm,3.45cm) rectangle ++(0.25cm,0.5cm);
+
+
+%\draw[black,line width=1pt,latex-] (8.6cm,1.8cm) -- ++(-0.6cm,0.2cm)
+%node[anchor=south] () {9-bit IO};
+
+\end{scope}
+
+\begin{scope}[shift={(0,-0.5)},scale=0.6]
+  \figLEGENDMfour
+\end{scope}
+\end{circuitikz}
+%\end{tikzpicture}
+
+\end{document}

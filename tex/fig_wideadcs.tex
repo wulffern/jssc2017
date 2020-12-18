@@ -1,0 +1,77 @@
+
+\documentclass[crop]{standalone}
+\usepackage{times}
+
+
+\usepackage{tikz,pgfplots}
+
+\pgfplotsset{
+        table/search path={../graphics},
+    }
+\usepackage{ifthen}
+\usepackage{calc}
+\usetikzlibrary{patterns}
+
+\pagestyle{empty}
+\begin{document}
+
+
+\begin{tikzpicture}[very thin,scale=1,
+    transform shape]
+
+
+\begin{scope}[shift={(0cm,0cm)}]
+
+  \draw[black] (8.8cm,0cm ) node[rotate=0,anchor=north]
+  () {{ (c)  }};
+  \draw[black] (2.7cm,0cm ) node[rotate=0,anchor=north]
+  () {{ (b) }};
+  \draw[black] (-2.4cm,0cm ) node[rotate=0,anchor=north]
+  () {{ (a) }};
+
+\begin{scope}[shift={(-4cm,0cm)},scale=0.4]
+%\filldraw [white]  (0,0cm) rectangle ++(2.417cm,\ycore);
+  \pgftext[at=\pgfpoint{0cm}{0cm},left,base]
+  {\pgfimage[interpolate=true]{ALGIC001_SAR9B_CV}}
+\end{scope}
+
+
+
+\begin{scope}[shift={(0cm,0cm)},scale=0.4]
+%\filldraw [white]  (0,0cm) rectangle ++(2.417cm,\ycore);
+  \pgftext[at=\pgfpoint{0cm}{0cm},left,base]
+  {\pgfimage[interpolate=true]{ALGIC004_SAR9BXL_CV}}
+\end{scope}
+
+\begin{scope}[shift={(6cm,0cm)},scale=0.4]
+% \filldraw [white]  (0cm,0cm) rectangle ++(\xwio,\yhio);
+  \pgftext[at=\pgfpoint{0cm}{0cm},left,base]
+  {\pgfimage[interpolate=true]{ALGIC006_SAR9B_CV}}
+\end{scope}
+
+
+%\draw[black,line width=1pt,latex-] (7.35cm,-9.8cm) -- ++(1.25cm,0)  node
+%[rotate=0,anchor=west] (n1) {$39 \mu m$} coordinate (core_w);
+%\draw[black,line width=1pt,-latex] (n1.east) -- ++(1.25cm,0);
+
+%\draw[black,line width=1pt,latex-] (1.5cm,-10.3cm) -- ++(1.3cm,0)  node
+%[rotate=0,anchor=west] (n1) {$40 \mu m$} coordinate (core_w);
+%\draw[black,line width=1pt,-latex] (n1.east) -- ++(1.3cm,0);
+
+%\draw[black,line width=1pt,latex-] (11.3cm,-9.5cm) -- ++(0,3.1cm)  node
+%[rotate=90,anchor=west] (n1) {$80 \mu m$} coordinate (core_w);
+%\draw[black,line width=1pt,-latex] (n1.east) -- ++(0,3.1cm);
+
+%\draw[black,line width=1pt,latex-] (1.3cm,-10cm) -- ++(0,4.3cm)  node
+%[rotate=90,anchor=west] (n1) {$106 \mu m$} coordinate (core_w);
+%\draw[black,line width=1pt,-latex] (n1.east) -- ++(0,4.3cm);
+
+%\draw[black,line width=1pt,latex-] (4cm,-5.5cm) -- ++(2.2cm,0.5cm) 
+%node[anchor=south] () {CDAC} coordinate (sw);
+%\draw[black,line width=1pt,-latex] (sw) -- ++(2.4cm,-0.2cm) ;
+
+
+\end{scope}
+\end{tikzpicture}
+
+\end{document}

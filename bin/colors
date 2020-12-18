@@ -1,0 +1,42 @@
+#!/usr/bin/perl
+######################################################################
+##        Copyright (c) 2016 Carsten Wulff Software, Norway 
+## ###################################################################
+## Created       : wulff at 2016-11-22
+## ###################################################################
+##   This program is free software: you can redistribute it and/or modify
+##   it under the terms of the GNU General Public License as published by
+##   the Free Software Foundation, either version 3 of the License, or
+##   (at your option) any later version.
+## 
+##   This program is distributed in the hope that it will be useful,
+##   but WITHOUT ANY WARRANTY; without even the implied warranty of
+##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##   GNU General Public License for more details.
+## 
+##   You should have received a copy of the GNU General Public License
+##   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+######################################################################
+
+my $buffer = <<'EOF';
+\definecolor{active}{rgb}{0.4,1,0.6}
+\definecolor{poly}{rgb}{1.0,0.5,0.5}
+\definecolor{cut}{rgb}{0.91,0.91,0}
+\definecolor{mOne}{rgb}{0.36,0.36,1}
+\definecolor{mTwo}{rgb}{0.655,0.655,0}
+\definecolor{mThree}{rgb}{0.3,1,1}
+\definecolor{mFour}{rgb}{0,0.2097,0}
+EOF
+
+sub dec2hex{
+  my $num  = shift;
+  return sprintf("%02X",$num*255);
+}
+
+
+my @lines = split(/\n/,$buffer);
+foreach (@lines){
+  my ($color,$r,$g,$b) = m#{([^}]+)}{rgb}{([^,]+),([^,]+),([^,]+)}#;
+
+  print " $color = ($r,$g,$b) = #".dec2hex($r).dec2hex($g).dec2hex($b)." \n";
+}

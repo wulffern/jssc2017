@@ -1,0 +1,87 @@
+
+\documentclass[crop]{standalone}
+\usepackage{times}
+
+
+\usepackage{tikz,pgfplots}
+
+\pgfplotsset{
+        table/search path={../graphics},
+    }
+\usepackage{ifthen}
+\usepackage{calc}
+\usetikzlibrary{patterns}
+
+\pagestyle{empty}
+\begin{document}
+
+
+\newcommand{\xcore}{2.4174cm}
+\newcommand{\ycore}{4.8726cm}
+\newcommand{\xxcore}{4.583cm}
+\newcommand{\yhio}{6.6358cm}
+\newcommand{\xwio}{2.512cm}
+\begin{tikzpicture}[very thin,scale=1,
+    transform shape]
+
+
+\begin{scope}[shift={(0cm,0cm)}]
+
+  \draw[black] (9cm,-10.5cm ) node[rotate=0,anchor=north]
+  () {{ (b)  }};
+  \draw[black] (3.2cm,-10.5cm ) node[rotate=0,anchor=north]
+  () {{ (a) }};
+
+
+\begin{scope}[shift={(0.5cm,-11cm)},scale=1.5]
+\filldraw [white]  (\xxcore,1cm) rectangle ++(2.417cm,\ycore);
+  \pgftext[at=\pgfpoint{\xxcore}{1cm},left,base]
+  {\pgfimage[interpolate=true,width=\xcore,height=\ycore]{ALGIC001_SAR9B_CV}}
+\end{scope}
+
+\begin{scope}[shift={(1.5cm,-10cm)},scale=1.5]
+ \filldraw [white]  (0cm,0cm) rectangle ++(\xwio,\yhio);
+  \pgftext[at=\pgfpoint{0cm}{0cm},left,base]
+  {\pgfimage[interpolate=true,width=\xwio,height=\yhio]{SAR9B_EV}}
+\end{scope}
+
+
+\draw[black,line width=1pt,latex-] (7.35cm,-9.8cm) -- ++(1.25cm,0)  node
+[rotate=0,anchor=west] (n1) {$39 \mu m$} coordinate (core_w);
+\draw[black,line width=1pt,-latex] (n1.east) -- ++(1.25cm,0);
+
+\draw[black,line width=1pt,latex-] (1.5cm,-10.3cm) -- ++(1.3cm,0)  node
+[rotate=0,anchor=west] (n1) {$40 \mu m$} coordinate (core_w);
+\draw[black,line width=1pt,-latex] (n1.east) -- ++(1.3cm,0);
+
+\draw[black,line width=1pt,latex-] (11.3cm,-9.5cm) -- ++(0,3.1cm)  node
+[rotate=90,anchor=west] (n1) {$80 \mu m$} coordinate (core_w);
+\draw[black,line width=1pt,-latex] (n1.east) -- ++(0,3.1cm);
+
+\draw[black,line width=1pt,latex-] (1.3cm,-10cm) -- ++(0,4.3cm)  node
+[rotate=90,anchor=west] (n1) {$106 \mu m$} coordinate (core_w);
+\draw[black,line width=1pt,-latex] (n1.east) -- ++(0,4.3cm);
+
+\draw[black,line width=1pt,latex-] (4cm,-5.5cm) -- ++(2.2cm,0.5cm) 
+node[anchor=south] () {CDAC} coordinate (sw);
+\draw[black,line width=1pt,-latex] (sw) -- ++(2.4cm,-0.2cm) ;
+
+\draw[black,line width=1pt,latex-] (4cm,-2.5cm) -- ++(2.8cm,0.5cm) 
+node[anchor=south] () {Logic} coordinate (sw);
+\draw[black,line width=1pt,-latex] (sw) -- ++(2.4cm,-0.5cm) ;
+
+\draw[black,line width=1pt,latex-] (4.8cm,-1.5cm) -- ++(2.8cm,0.5cm) 
+node[anchor=south] () {Comparator} coordinate (sw);
+\draw[black,line width=1pt,-latex] (sw) -- ++(3.1cm,-2.0cm) ;
+
+
+\draw[black,line width=1pt,latex-] (4cm,-9.5cm) -- ++(2.2cm,0.5cm) 
+node[anchor=south] () {Switch} coordinate (sw);
+\draw[black,line width=1pt,-latex] (sw) -- ++(2.4cm,-0.2cm) ;
+
+
+
+\end{scope}
+\end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,67 @@
+
+\input{../tex/fig_header}
+
+  \input{../tex/SAR_ESSCIRC16_28N}
+  \input{../tex/legend}
+
+%\newcommand\HUGE{\@setfontsize\Huge{50}{60}} 
+  \libSARESSCIRConesixtwoeightNtex
+
+  \begin{circuitikz}[very thin, scale=1,
+    transform shape]
+    
+%\begin{scope}[shift={(6in,9in)},scale=2]
+%  \pgftext[at=\pgfpoint{0in}{0in},left,base]
+%          {\pgfimage[interpolate=true,height=7.38in,width=10in]{../graphics/3dcapacitor.eps}}
+%\end{scope}
+
+\begin{scope}[shift={(0in,9in)},scale=1.7]
+  \pgftext[at=\pgfpoint{0in}{0in},left,base]
+          {\pgfimage[interpolate=true,height=7.33in,width=10.15in]{../graphics/3dcap_west.eps}}
+\end{scope}
+
+\begin{scope}[shift={(18in,8in)},scale=2.5]
+  \pgftext[at=\pgfpoint{0in}{0in},left,base]
+          {\pgfimage[interpolate=true,height=5.90in,width=2.34in]{../graphics/3dcap_south.eps}}
+\end{scope}
+
+\begin{scope}[shift={(25in,9in)},scale=1.9]
+  \pgftext[at=\pgfpoint{0in}{0in},left,base]
+          {\pgfimage[interpolate=true,height=7.04in,width=4.28in]{../graphics/3dcap_top.eps}}
+\end{scope}
+
+    \begin{scope}[shift={(85.68/2,8.5in)},scale=3.0]
+    \draw[black,font=\LARGE] (0,0) node [anchor=north] ()  {(a)};
+    \end{scope}
+
+    \begin{scope}[shift={(85.68/2,-3)},scale=3.0]
+    \draw[black,font=\LARGE] (0,0) node [anchor=south] ()  {(b)};
+    \end{scope}
+
+    \begin{scope}[shift={(0,0)},font=\LARGE,scale=1]
+\setboolean{cicaddtext}{false}
+      \figCAPthreetwoCCV
+
+\setboolean{cicaddtext}{true}
+    \end{scope}
+
+    \begin{scope}[shift={(0,0)},font=\LARGE,scale=2]
+
+\draw (1.84,0) node [anchor=north west,cicfill] {\textbf{$CTOP$}};
+\draw (0,1.035) node [anchor=north west,cicfill] {\textbf{$C1A$}};
+\draw (0,8.01) node [anchor=north west,cicfill] {\textbf{$C1B$}};
+\draw (0,3.825) node [anchor=north west,cicfill] {\textbf{$C2$}};
+\draw (0,6.615) node [anchor=north west,cicfill] {\textbf{$C4$}};
+\draw (0,5.22) node [anchor=north west,cicfill] {\textbf{$C8$}};
+\draw (0,2.43) node [anchor=north west,cicfill] {\textbf{$C16$}};
+\end{scope}
+
+    \begin{scope}[shift={(0,8.5in)},font=\LARGE,scale=2.5]
+      \figLEGENDMoneMfour
+    \end{scope}
+
+
+
+
+  \end{circuitikz}
+\end{document}

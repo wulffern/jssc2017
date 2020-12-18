@@ -1,0 +1,3 @@
+[submodule "ciccreator"]
+	path = ciccreator
+	url = git@github.com:wulffern/ciccreator.git
