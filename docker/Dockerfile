@@ -1,9 +1,10 @@
 
-FROM ubuntu:bionic
+FROM thomasweise/docker-texlive-full:latest
 
-RUN ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
-    && echo "Etc/UTC" > /etc/timezone \
-    && apt-get update \
-    && apt-get upgrade -y
-RUN apt-get install texlive-full \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git
+
+WORKDIR /home
+RUN git clone https://github.com/wulffern/jssc2017.git
+WORKDIR /home/jssc2017
+RUN git submodule init
+RUN git submodule update

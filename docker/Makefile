@@ -27,7 +27,7 @@
 
 
 all:
-	docker build --no-cache  -t jssc2016 .
+	docker build   -t jssc2016 .
 
 run-sh:
 	docker run --rm -it jssc2016 bash
