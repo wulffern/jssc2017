@@ -1,6 +1,6 @@
 
 # Do ``docker pull docker pull makisyu/texlive-2016``
-FROM ubuntu:xenial
+FROM ubuntu:trusty
 
 
 
@@ -11,7 +11,7 @@ RUN apt-get update -q && \
 
 #- Copied from  https://github.com/rabits/dockerfiles/blob/master/5.4-desktop/Dockerfile
 #- Install QT
-RUN apt-get -qq update && apt-get -qq dist-upgrade && apt-get install -qq -y --no-install-recommends \
+RUN apt-get -qq update && apt-get install -qq -y --no-install-recommends \
     git \
     openssh-client \
     ca-certificates \
