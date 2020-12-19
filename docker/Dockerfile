@@ -1,17 +1,15 @@
 
-# Do ``docker pull docker pull makisyu/texlive-2016``
-FROM ubuntu:trusty
 
-
+FROM ubuntu:bionic
 
 RUN apt-get update -q && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -qy texlive-full make git openjdk-8-jre-headless rubber scons && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -qy texlive-full make git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 #- Copied from  https://github.com/rabits/dockerfiles/blob/master/5.4-desktop/Dockerfile
 #- Install QT
-RUN apt-get -qq update && apt-get install -qq -y --no-install-recommends \
+RUN apt-get -qq update && apt-get -qq dist-upgrade && apt-get install -qq -y --no-install-recommends \
     git \
     openssh-client \
     ca-certificates \
@@ -60,4 +58,4 @@ RUN git pull
 RUN git submodule init
 RUN git submodule update
 RUN cd ciccreator && make
-RUN make
+#RUN make
