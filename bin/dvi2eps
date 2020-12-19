@@ -21,7 +21,7 @@
 #dvipdf $1.dvi
 #pdftops -f 1 -l 1 -eps "$1.pdf" "temp.eps"
 #pdftops -eps $1.pdf temp.eps
-dvips -E  $1.dvi -o temp.ps
+dvips -E  $1.dvi -o temp.eps
 #ps2eps -O  -B -f temp.ps
 #cp temp.ps $1.eps
 epstool --copy --bbox temp.eps $1.eps
