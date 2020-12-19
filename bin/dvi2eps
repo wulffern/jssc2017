@@ -17,12 +17,6 @@
 ##   You should have received a copy of the GNU General Public License
 ##   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ######################################################################
-
-#dvipdf $1.dvi
-#pdftops -f 1 -l 1 -eps "$1.pdf" "temp.eps"
-#pdftops -eps $1.pdf temp.eps
 dvips -E  $1.dvi -o temp.eps
-#ps2eps -O  -B -f temp.ps
-#cp temp.ps $1.eps
 epstool --copy --bbox temp.eps $1.eps
-rm temp.eps temp.ps
+rm temp.eps 
