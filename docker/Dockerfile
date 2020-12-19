@@ -1,11 +1,15 @@
 
-# Do ``docker pull docker pull thomasweise/docker-texlive-full``
-FROM thomasweise/docker-texlive-full:latest
+# Do ``docker pull docker pull makisyu/texlive-2016``
+FROM ubuntu:xenial
+
+
+
+RUN apt-get update -q && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -qy texlive-full make git openjdk-8-jre-headless rubber scons && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 #- Copied from  https://github.com/rabits/dockerfiles/blob/master/5.4-desktop/Dockerfile
-
-
-
 #- Install QT
 RUN apt-get -qq update && apt-get -qq dist-upgrade && apt-get install -qq -y --no-install-recommends \
     git \
@@ -46,16 +50,8 @@ RUN mkdir $QT_PATH && cd $QT_PATH \
     && /tmp/qt/installer.run --runoperation QtPatch linux $QT_DESKTOP qt5 || exit 0;
     #&& rm -rf /tmp/qt
 
-# Reconfigure locale
-#RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 
-# Add group & user
-#RUN groupadd -r user && useradd --create-home --gid user user && echo 'user ALL=NOPASSWD: ALL' > /etc/sudoers.d/user
-
-#USER user
-#WORKDIR /home/user
-#ENV HOME /home/user
-
+RUN apt-get install -y epstool
 
 #- Clone JSSC
 RUN git clone https://github.com/wulffern/jssc2017.git
@@ -64,3 +60,4 @@ RUN git pull
 RUN git submodule init
 RUN git submodule update
 RUN cd ciccreator && make
+RUN make
