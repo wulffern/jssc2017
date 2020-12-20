@@ -23,6 +23,7 @@ run `make`
 
 
 ## Status
+
 | Version | Changelog | Comment |
 | :-: | :-: | :-: |
 | 0.2.0 | Fix bounding box for figures with layout | |
