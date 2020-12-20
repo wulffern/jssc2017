@@ -47,15 +47,15 @@ open(fo, " > $fo") or die "Could not open $fo";
 open(fi,"< $file") or die "Could not open $file";
 while(<fi>){
   if(m#\\graphicspath{{../eps/}}#){
-	print fo "\\graphicspath{{.}}\n";
+	print fo "\\graphicspathi\{\{.\}\}\n";
   }
-  elsif(m#\\input{#ig){
+  elsif(m#\\input\{#ig){
 	my ($fx) = m/(.*)\}/ig;
 	printfile($fx);
-  }elsif(m#\\bibliography{#ig){
+  }elsif(m#\\bibliography\{#ig){
 	s/..\/bib\///ig;
 	print fo $_;
-  }else{
+}else{
 	print fo $_;
   }
 }
