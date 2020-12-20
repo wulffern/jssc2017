@@ -968,7 +968,50 @@ comparison of key measurements with prior-art.
 \caption{Comparison to prior art.}
 \renewcommand{\arraystretch}{1.3}
 \label{tab_prior}
-\includegraphics[width=\myfigwidthb]{fig_table}
+%\includegraphics[width=\myfigwidthb]{fig_table}
+\begin{table}[tb]
+\centering
+%\caption{Comparison to prior art.}
+%\renewcommand{\arraystretch}{1.3}
+%\label{tab_prior}
+%\resizebox{\myfigwidthl}{!}{%
+\begin{tabular}{  l  c  c  c  c  c c  }
+\toprule
+	 & Weaver \cite{weaver14} & Harpe \cite{harpe12} & Patil
+                                                       \cite{patil16}
+  & Liu
+                                                           \cite{liu16} & \multicolumn{2}{c}{This work}
+  \\
+\toprule
+  Technology (nm) & 90 & 90 & 28 FDSOI & 28 &
+                                                  \multicolumn{2}{c}{28 FDSOI}  \\
+  Fsample (MS/s) & 21 & 2 & \edit{No sampling} & 100 &  2 & 20  \\
+  Core area (mm\textsuperscript{2}) & 0.18 & 0.047 & 0.0032 & 0.0047
+                                                                        &
+                                                                          \multicolumn{2}{
+                                                                          c }{0.00312}  \\
+  \midrule
+  SNDR (dB) & 34.61 & 57.79 & 40 & 64.43 & 46.43 & 48.84 \\
+  SFDR (dBc) & 40.81 & 72.33 & 30 &  75.42 & 61.72 & 63.11  \\
+  ENOB (bits) & 5.45 & 6.7 - 9.4 &6.35 & 10.41  & 7.42 & 7.82  \\
+  \midrule
+  Supply (V) & 0.7 & 0.7 & 0.65 & 0.9  & 0.47 & 0.69  \\
+% \edit{ Ref. pwr (\%)} & - & - & - & - &\edit{ \texttildelow 50} &
+%                                                                     \edit{
+%                                                                     \texttildelow
+%                                                                     44}   \\
+% \edit{ Other pwr (\%)} & - & - & - &- &\edit{ \texttildelow 50} &
+%                                                                     \edit{
+%                                                                     \texttildelow
+%                                                                     56}  \\
+  Pwr ($\mu$W) & 1110 & 1.64 -3.56 & 24 & 350 &  0.94 & 15.87 \\
+  \midrule
+  Compiled & Yes & No & No & No & \multicolumn{2}{c}{Yes}  \\
+  FoM (fJ/c.step) & 838 & 2.8 - 6.6 & 3.7 & 2.6 & 2.7 & 3.5 \\
+  \bottomrule
+\end{tabular}
+%}
+\end{table}
 % \resizebox{\linewidth}{!}{%
 % \begin{tabular}{  l  c  c  c  c  c c  }
 % \toprule
