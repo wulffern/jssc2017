@@ -29,6 +29,7 @@ CONT=jssc2017_bionic
 
 all:
 	docker build   -t ${CONT} .
+	${MAKE} copy
 
 copy:
 	docker run --rm ${CONT} cat /jssc2017/lib/jssc2016.pdf > jssc2016.pdf
