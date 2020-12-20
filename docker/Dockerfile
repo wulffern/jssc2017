@@ -58,4 +58,5 @@ RUN git pull
 RUN git submodule init
 RUN git submodule update
 RUN cd ciccreator && make
-RUN  make
+RUN git pull
+RUN make

@@ -36,4 +36,4 @@ copy:
 	docker run --rm ${CONT} cat /jssc2017/lib/jssc2016_gray.pdf > jssc2016_gray.pdf
 
 run-sh:
-	docker run --rm -it ${CONT} bash
+	docker run --rm -it -v `pwd`/host-volume:/host-volume ${CONT} bash
