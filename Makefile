@@ -19,10 +19,7 @@ ANALOGICUS= ../analogicus
 
 .PHONY: eps delivery	 pdf
 
-all: sarimg adcimg diimg sartex sim eps latex texpdf
-
-texpdf:
-	cd ${LIB}; ${MAKE} DOC=jssc2016 ieee gray
+all: sarimg adcimg diimg sartex sim eps latex texpdfgray
 
 clean:
 	cd ${LIB}; ${MAKE} clean
@@ -38,8 +35,6 @@ latex:
 
 texpdfgray:
 	cd ${LIB}; ${MAKE} gray DOC=jssc2016
-
-
 
 allfigslist:
 	cd ${PDF}; cat ../tex/compiled.sar.tex| egrep includegraphics |perl -ne ' s#^.*includegraphics.*{##ig; s#}+$$##ig; print $$_;'
