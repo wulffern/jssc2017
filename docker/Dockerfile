@@ -63,4 +63,5 @@ RUN make
 RUN git pull
 RUN git pull
 RUN git pull
+RUN git pull
 RUN make delivery

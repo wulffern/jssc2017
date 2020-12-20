@@ -46,8 +46,8 @@ sub printfile{
 open(fo, " > $fo") or die "Could not open $fo";
 open(fi,"< $file") or die "Could not open $file";
 while(<fi>){
-  if(m#\\graphicspath{{../eps/}}#){
-	print fo "\\graphicspathi\{\{.\}\}\n";
+  if(m#\\graphicspath\{\{../eps/\}\}#){
+	print fo "\\graphicspath{{.}}\n";
   }
   elsif(m#\\input\{#ig){
 	my ($fx) = m/(.*)\}/ig;
