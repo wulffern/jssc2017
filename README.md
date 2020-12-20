@@ -25,6 +25,6 @@ run `make`
 ## Status
 
 | Version | Changelog | Comment |
-| :-: | :-: | :-: |
+| :- | :- | :- |
 | 0.2.0 | Fix bounding box for figures with layout | |
 | 0.1.0 | Initial release | The bounding box for some of the EPS is fubar, don't know why|
