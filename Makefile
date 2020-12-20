@@ -78,7 +78,6 @@ delivery:
 	-rm delivery/wulff_${DATE}.zip
 	cd lib;	../bin/delivery jssc2016.tex ../${DELI}
 	mv ${DELI}/jssc2016.tex ${DELI}/FINAL_VERSION_TWOCOLUMN.tex
-	cd ${DELI}; make
 	cd ${DELI}; make DOC=FINAL_VERSION_TWOCOLUMN
 	cd ${DELI}; make clean
 	cd delivery; zip -r wulff_${DATE}.zip wulff_${DATE}
