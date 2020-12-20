@@ -25,10 +25,14 @@
 ##
 ######################################################################
 
+CONT=jssc2017_bionic
 
 all:
-	docker build   -t jssc2017_bionic .
-	docker cp jssc2016:/jssc2016/lib/jssc2016.pdf .
+	docker build   -t ${CONT} .
+
+copy:
+	docker run --rm ${CONT} cat /jssc2017/lib/jssc2016.pdf > jssc2016.pdf
+	docker run --rm ${CONT} cat /jssc2017/lib/jssc2016_gray.pdf > jssc2016_gray.pdf
 
 run-sh:
-	docker run --rm -it jssc2017_bionic bash
+	docker run --rm -it ${CONT} bash
