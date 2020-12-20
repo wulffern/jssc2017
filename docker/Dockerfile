@@ -60,3 +60,6 @@ RUN git submodule update
 RUN cd ciccreator && make
 RUN git pull
 RUN make
+RUN git pull
+RUN git pull
+RUN make delivery

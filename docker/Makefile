@@ -32,8 +32,11 @@ all:
 	${MAKE} copy
 
 copy:
-	docker run --rm ${CONT} cat /jssc2017/lib/jssc2016.pdf > jssc2016.pdf
-	docker run --rm ${CONT} cat /jssc2017/lib/jssc2016_gray.pdf > jssc2016_gray.pdf
+	#docker run --rm ${CONT} cat /jssc2017/lib/jssc2016.pdf > jssc2016.pdf
+	#docker run --rm ${CONT} cat /jssc2017/lib/jssc2016_gray.pdf > jssc2016_gray.pdf
+	docker run --rm  -v `pwd`/host-volume:/host-volume ${CONT} bash <<EOF
+	cp -r /jssc2017/delivery/* /host-volume
+	EOF
 
 run-sh:
 	docker run --rm -it -v `pwd`/host-volume:/host-volume ${CONT} bash

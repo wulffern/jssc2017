@@ -73,7 +73,7 @@ DATE = $(shell date +%Y-%m-%d)
 DELI= delivery/wulff_${DATE}
 
 delivery:
-	-mkdir ${DELI}
+	-mkdir -p ${DELI}
 	-rm -rf ${DELI}
 	-rm delivery/wulff_${DATE}.zip
 	cd lib;	../bin/delivery jssc2016.tex ../${DELI}
