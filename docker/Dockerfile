@@ -2,8 +2,10 @@
 
 FROM ubuntu:bionic
 
-RUN apt-get update -q && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -qy texlive-full make git && \
+
+#- Texlive
+RUN apt-get -qq dist-upgrade  &&apt-get update -q  && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -qy texlive-full make git curl epstool && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -47,8 +49,6 @@ RUN mkdir $QT_PATH && cd $QT_PATH \
     && /tmp/qt/installer.run --runoperation QtPatch linux $QT_DESKTOP qt5 || exit 0;
     #&& rm -rf /tmp/qt
 
-
-RUN apt-get install -y epstool
 
 #- Clone JSSC
 RUN git clone https://github.com/wulffern/jssc2017.git
